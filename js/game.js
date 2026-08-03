@@ -8,6 +8,9 @@ function init() {
 
 document.addEventListener('keydown', (event) => {
     switch (event.keyCode) {
+        case 68:
+            keyword.D = true;
+            break;
         case 40:
             keyword.DOWN = true;
             break;
@@ -30,6 +33,9 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('keyup', (event) => {
     switch (event.keyCode) {
+        case 68:
+            keyword.D = false;
+            break;
         case 40:
             keyword.DOWN = false;
             break;
