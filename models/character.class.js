@@ -29,6 +29,8 @@ class Character extends MovableObject {
         'img/2_character_pepe/4_hurt/H-42.png',
         'img/2_character_pepe/4_hurt/H-43.png'  
     ];
+    coins = 0;
+    bottles = 0; 
 
     constructor() {
         super().loadImage('/img/2_character_pepe/2_walk/W-21.png');

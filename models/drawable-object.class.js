@@ -6,6 +6,7 @@ class DrawableObject{
     y = 280;
     height = 150;
     width = 100;
+    IMAGES;
 
     loadImage(path) {
         this.img = new Image();
@@ -36,3 +37,4 @@ class DrawableObject{
     }
 
 }
+
