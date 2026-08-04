@@ -74,10 +74,12 @@ class Character extends MovableObject {
 
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
+                console.log(this.energy);
             }
 
             else if(this.isHurt()){
                 this.playAnimation(this.IMAGES_HURT);
+                console.log(this.energy);
             }
 
             else if (this.isAboveGround()) {
@@ -86,6 +88,7 @@ class Character extends MovableObject {
             else{
                 if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.IMAGES_WALKING);
+                console.log(this.energy);
             }
             }
         }, 50);

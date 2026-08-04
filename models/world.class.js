@@ -53,10 +53,12 @@ class World {
             this.checkBottles();
             this.checkCoins();
             this.checkCollisions();
+            this.checkBottleImpact();
+            this.collectCoins(this.level.coins);
+            this.collectBottles(this.level.bottles); 
             this.checkThrowObjects();
         }, 200);
-    }
-
+    } 
     checkCoins(){
       this.statusBarCoins.setPercentage(this.character.coins);
     }
@@ -66,9 +68,10 @@ class World {
     }
 
     checkThrowObjects(){
-        if (this.keyboard.D) {
-            let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
-            this.throwableObjects.push(bottle);
+        if (this.keyboard.D && this.character.bottles > 0) {
+            let throwableObject = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+            this.throwableObjects.push(throwableObject);
+            this.character.bottles -= 20;
         }
     }
 
@@ -79,18 +82,42 @@ class World {
                     this.statusBarLife.setPercentage(this.character.energy);
                 }
             });
-        this.level.coins.forEach((coin)=>{
-                if (this.character.isColliding(coin)) {
-                    this.character.coins += 10;  
-                    this.removeObjectFromArray(coin.x);
-                  }
-        }
-        );
     }
 
-    removeObjectFromArray(value){
-        const removeIndex = this.level.coins.findIndex(item => item.x === value);
-        this.level.coins.splice(removeIndex, 1);
+    checkBottleImpact(){
+        let boss = this.level.enemies[this.level.enemies.length - 1];
+        this.throwableObjects.forEach((element)=>{
+            if (boss.isColliding(element)) {
+                boss.hit();
+                this.removeObjectFromArray(element.x, this.throwableObjects); 
+                this.statusBarEndBoss.setPercentage(boss.energy * 4) ;
+            }
+        }); 
+    }
+
+    collectCoins(coinsList){
+        coinsList.forEach((coin)=>{
+                if (this.character.isColliding(coin)) {
+                    this.character.coins += 10;  
+                    this.removeObjectFromArray(coin.x, this.level.coins);
+                  }
+        }
+        ); 
+    }
+
+    collectBottles(bottlesList){
+        bottlesList.forEach((bottle)=>{
+                if (this.character.isColliding(bottle)) {
+                    this.character.bottles += 20;  
+                    this.removeObjectFromArray(bottle.x, this.level.bottles);
+                  }
+        }
+        ); 
+    }
+
+    removeObjectFromArray(value, array){
+        const removeIndex = array.findIndex(item => item.x === value);
+        array.splice(removeIndex, 1);
     }
 
     draw() {
