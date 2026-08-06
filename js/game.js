@@ -1,5 +1,7 @@
 let world;
 let keyword = new Keyboard();
+let walking_sound = new Audio('./audio/pepe-walking.mp3');
+let jumping_sound = new Audio('./audio/pepe-sprung.mp3');
 
 function init() {
     canvas = document.getElementById('canvas');
@@ -15,15 +17,19 @@ document.addEventListener('keydown', (event) => {
             keyword.DOWN = true;
             break;
         case 38:
+            jumping_sound.play();
             keyword.UP = true;
             break;
         case 39:
+            walking_sound.play()
             keyword.RIGHT = true;
             break;
         case 37:
+            walking_sound.play()
             keyword.LEFT = true;
             break;
         case 32:
+            jumping_sound.play();
             keyword.SPACE = true;
             break;
         default:

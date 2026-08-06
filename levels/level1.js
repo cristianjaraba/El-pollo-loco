@@ -7,7 +7,7 @@ for (let index = 0; index < 10 ; index++) {
     ], x, y, 80, 80 ))
 }
 let bottlesList = [];
-for (let index = 0; index < 5 ; index++) {
+for (let index = 0; index < 10 ; index++) {
     let x = Math.floor(Math.random() * (2000 - 200 + 1)) + 200;
     let y = Math.floor(Math.random() * (350 - 330 + 1)) + 330;
     bottlesList.push(new CollectableObject(['img/6_salsa_bottle/1_salsa_bottle_on_ground.png',
