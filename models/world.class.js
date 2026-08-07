@@ -38,6 +38,13 @@ class World {
     bottle_sound = new Audio('./audio/pick_bottle.mp3');
     chicken_bg = new Audio('./audio/chicken-bg.mp3');
     dead_chicken_sound = new Audio('audio/dead_chicken.mp3');
+    gameoveImg = new BackgroundObject('img/You won, you lost/Game Over.png', 0, 500, 300);
+    youwinImg = new BackgroundObject('img/You won, you lost/You Win A.png', 0, 500, 300);
+    gameoverSound = new Audio('audio/gameover.mp3');
+    youwinSound = new Audio('audio/youwin.mp3');
+    endOfgame = false;
+    gameover = false;
+    youwin = false;
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext('2d');
@@ -46,6 +53,40 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
+        this.checkEndOfGame();
+    }
+
+    checkEndOfGame() {
+        setInterval(() => {
+            if (this.gameover == true && this.endOfgame == false) {
+                this.character.dead_sound_pepe.play();
+                this.gameoverSound.play();
+                this.endOfgame = true;
+                // let startTime = Date.now();
+
+                // let test = setInterval(() => {
+                //     this.character.playAnimation(this.character.IMAGES_DEAD);
+                    
+                //     if (Date.now() - startTime >= 3000) {
+                //         clearInterval(test);
+                //     }
+                // }, 150);
+                this.clearAllIntervals();
+            }
+            if (this.youwin == true && this.endOfgame == false) {
+                this.youwinSound.play();
+                this.endOfgame = true;
+                this.clearAllIntervals();
+            }
+
+        }, 1000);
+    }
+
+    clearAllIntervals() {
+        const interval_id = window.setInterval(function () { }, Number.MAX_SAFE_INTEGER);
+        for (let i = 1; i < interval_id; i++) {
+            window.clearInterval(i);
+        }
     }
 
     setWorld() {
@@ -53,7 +94,7 @@ class World {
     }
 
     run() {
-        setInterval(() => {
+        let worldInterval1 = setInterval(() => {
             this.checkBottles();
             this.checkCoins();
             this.checkCollisions();
@@ -62,19 +103,6 @@ class World {
             this.collectBottles(this.level.bottles);
             this.checkThrowObjects();
         }, 200);
-        setInterval(() => {
-            this.checkEndofGame();
-        }, 4000);
-    }
-
-    checkEndofGame() {
-        if (this.character.isDead()) {
-
-            const interval_id = window.setInterval(function () { }, Number.MAX_SAFE_INTEGER);
-            for (let i = 1; i < interval_id; i++) {
-                window.clearInterval(i);
-            }
-        }
     }
 
     checkCoins() {
@@ -86,7 +114,7 @@ class World {
     }
 
     checkThrowObjects() {
-        if (this.keyboard.D && this.character.bottles > 0) {
+        if (this.keyboard.D && this.character.bottles > 0 && !this.character.isSleeping) {
             let throwableObject = new ThrowableObject(this.character.x + 100, this.character.y + 100);
             this.throwableObjects.push(throwableObject);
             this.character.bottles -= 20;
@@ -135,7 +163,7 @@ class World {
         bottlesList.forEach((bottle) => {
             if (this.character.isColliding(bottle)) {
                 this.bottle_sound.play();
-                this.character.bottles += 20;
+                this.character.bottles += 10;
                 this.removeObjectFromArray(bottle.x, this.level.bottles);
             }
         }
@@ -151,6 +179,7 @@ class World {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.translate(this.camera_x, 0);
+
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
         this.addToMap(this.character);
@@ -158,6 +187,7 @@ class World {
         this.addObjectsToMap(this.throwableObjects);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.bottles);
+
         this.ctx.translate(-this.camera_x, 0);
 
         this.addToMap(this.statusBarLife);
@@ -165,7 +195,17 @@ class World {
         this.addToMap(this.statusBarBottles);
         this.addToMap(this.statusBarEndBoss);
 
+        if (this.character.isDead()) {
+            this.gameoveImg.setInTheMiddle();
+            this.addToMap(this.gameoveImg);
+            this.gameover = true;
+        }
 
+        if (this.level.enemies[this.level.enemies.length - 1].isDead()) {
+            this.youwinImg.setInTheMiddle();
+            this.addToMap(this.youwinImg);
+            this.youwin = true;
+        }
 
         let self = this;
         requestAnimationFrame(function () {

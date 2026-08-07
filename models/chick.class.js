@@ -20,13 +20,13 @@ class Chick extends Chicken{
     }
 
     animate() {
-        let chickInterval = setInterval(() => { 
+        let chickInterval1 = setInterval(() => { 
             this.moveLeft(); 
         }, 1000 / 60);
-        setInterval(() => {
+        let chickInterval2 = setInterval(() => {
             if (this.isDead()) {
                 this.loadImage(this.IMAGE_DEAD);
-                clearInterval(chickInterval);
+                clearInterval(chickInterval1);
             }
             else{
                 this.playAnimation(this.IMAGES_WALKING);

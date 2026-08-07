@@ -29,15 +29,15 @@ class ThrowableObject extends MovableObject {
         this.throw_sound.play();
         this.speedY = 30;
         this.applyGravity();
-        setInterval(() => {
+        let animationIntervalBottle1 = setInterval(() => {
             this.x += 5;
         }, 25);
-        let animationIntervalBottle = setInterval(() => {
+        let animationIntervalBottle2 = setInterval(() => {
             if (this.y > 350) {
                 this.playAnimation(this.IMAGES_SPLASH);
                 this.bottel_hit_sound.play();
 
-                clearInterval(animationIntervalBottle);
+                clearInterval(animationIntervalBottle2);
             } else {
                 this.playAnimation(this.IMAGES_ROTATING);
             }

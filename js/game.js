@@ -8,7 +8,7 @@ function init() {
     world = new World(canvas, keyword);
 }
 
-document.addEventListener('keydown', (event) => {
+function handleKeyDown(event) {
     switch (event.keyCode) {
         case 68:
             keyword.D = true;
@@ -21,11 +21,11 @@ document.addEventListener('keydown', (event) => {
             keyword.UP = true;
             break;
         case 39:
-            walking_sound.play()
+            walking_sound.play();
             keyword.RIGHT = true;
             break;
         case 37:
-            walking_sound.play()
+            walking_sound.play();
             keyword.LEFT = true;
             break;
         case 32:
@@ -35,7 +35,9 @@ document.addEventListener('keydown', (event) => {
         default:
             break;
     }
-})
+}
+
+document.addEventListener('keydown', handleKeyDown);
 
 document.addEventListener('keyup', (event) => {
     switch (event.keyCode) {

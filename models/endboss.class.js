@@ -25,6 +25,7 @@ class Endboss extends MovableObject{
     ];
     dead_sound_boss = new Audio('./audio/endboss_dead.mp3');
     hit_sound_boss = new Audio('./audio/endboss_hurt.mp3');
+    youwinSound = new Audio('audio/youwin.mp3');
 
     constructor(){
         super().loadImage(this.IMAGES_WALKING[0]);
@@ -36,13 +37,14 @@ class Endboss extends MovableObject{
     }
 
      animate() {
-        setInterval(() => { 
+        let endBossInterval1 = setInterval(() => { 
             this.moveLeft(); 
         }, 1000 / 60);
-        setInterval(() => {
+        let endBossInterval2 = setInterval(() => {
             if (this.isDead()) {
                 this.dead_sound_boss.play();
                 this.playAnimation(this.IMAGES_DEAD);
+                this.youwinSound.play();
             }
 
             else if(this.isHurt()){
