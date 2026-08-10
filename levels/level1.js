@@ -18,22 +18,70 @@ let gameoverImgs = [];
 
 const level1 = new Level(
     [
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chick(),
-        new Chick(),
-        new Chick(),
-        new Chick(),
-        new Chick(),
-        new Chick(),
-        new Chick(),
-        new Chick(),
+        new Chicken(['img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
+        ], "img/3_enemies_chicken/chicken_normal/2_dead/dead.png"),
+        new Chicken(['img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
+        ], "img/3_enemies_chicken/chicken_normal/2_dead/dead.png"),
+        new Chicken(['img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
+        ], "img/3_enemies_chicken/chicken_normal/2_dead/dead.png"),
+        new Chicken(['img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
+        ], "img/3_enemies_chicken/chicken_normal/2_dead/dead.png"),
+        new Chicken(['img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
+        ], "img/3_enemies_chicken/chicken_normal/2_dead/dead.png"),
+        new Chicken(['img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
+        ], "img/3_enemies_chicken/chicken_normal/2_dead/dead.png"),
+        new Chicken(['img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
+        ], "img/3_enemies_chicken/chicken_normal/2_dead/dead.png"),
+        new Chicken(['img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
+        ], "img/3_enemies_chicken/chicken_normal/2_dead/dead.png"),
+        new Chick(['img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/3_w.png'
+        ], 'img/3_enemies_chicken/chicken_small/2_dead/dead.png'),
+         new Chick(['img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/3_w.png'
+        ], 'img/3_enemies_chicken/chicken_small/2_dead/dead.png'),
+         new Chick(['img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/3_w.png'
+        ], 'img/3_enemies_chicken/chicken_small/2_dead/dead.png'),
+         new Chick(['img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/3_w.png'
+        ], 'img/3_enemies_chicken/chicken_small/2_dead/dead.png'),
+         new Chick(['img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/3_w.png'
+        ], 'img/3_enemies_chicken/chicken_small/2_dead/dead.png'),
+         new Chick(['img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/3_w.png'
+        ], 'img/3_enemies_chicken/chicken_small/2_dead/dead.png'),
+         new Chick(['img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/3_w.png'
+        ], 'img/3_enemies_chicken/chicken_small/2_dead/dead.png'),
+         new Chick(['img/3_enemies_chicken/chicken_small/1_walk/1_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/2_w.png',
+            'img/3_enemies_chicken/chicken_small/1_walk/3_w.png'
+        ], 'img/3_enemies_chicken/chicken_small/2_dead/dead.png'),
         new Endboss()
     ],
     [new Cloud()],

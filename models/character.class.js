@@ -65,7 +65,8 @@ class Character extends MovableObject {
     hit_sound_pepe = new Audio('./audio/pepe_hurt.mp3');
     idleStautsStart;
     snore = new Audio('audio/snore.mp3');
-    isSleeping = false;
+    characterInterval1;
+    characterInterval2;
 
     constructor() {
         super().loadImage('/img/2_character_pepe/2_walk/W-21.png');
@@ -75,13 +76,14 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_HURT);
+        this.idleStautsStart = new Date().getTime();
         this.applyGravity();
         this.animate();
     }
 
     animate() {
 
-        let characterInterval1 = setInterval(() => {
+        this.characterInterval1 = setInterval(() => {
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.moveRight();
                 this.otherDirection = false;
@@ -98,7 +100,7 @@ class Character extends MovableObject {
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
-        let characterInterval2 = setInterval(() => {
+        this.characterInterval2 = setInterval(() => {
 
             if (this.isDead()) {
                 this.hit_sound_pepe.pause();
@@ -106,21 +108,20 @@ class Character extends MovableObject {
             }
 
             else if (this.isHurt()) {
-                this.isSleeping = false;
                 this.hit_sound_pepe.play();
                 this.playAnimation(this.IMAGES_HURT);
                 this.idleStautsStart = new Date().getTime();
             }
 
             else if (this.isAboveGround()) {
-                this.isSleeping = false;
                 this.playAnimation(this.IMAGES_JUMPING);
                 this.idleStautsStart = new Date().getTime();
+                this.snore.pause(); 
             }
             else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
-                    this.isSleeping = false;
                     this.playAnimation(this.IMAGES_WALKING);
                     this.idleStautsStart = new Date().getTime();
+                    this.snore.pause();
                 }
             else{
                 this.playIdleAnimiations();
@@ -128,18 +129,14 @@ class Character extends MovableObject {
             }, 150); 
     }
 
-    playIdleAnimiations(){
+    playIdleAnimiations(){   
         let timepassedIdleStatus = (new Date().getTime() - this.idleStautsStart) / 1000;
-                if (timepassedIdleStatus > 3) {
-                    this.isSleeping = true;
+                if (timepassedIdleStatus > 5) {
                     this.playAnimation(this.IMAGES_LONGIDLE);
                         this.snore.play();
                 } else {
-                    this.isSleeping = false;
                     this.playAnimation(this.IMAGES_IDLE);
                 }
     }
-
-    
 
 }

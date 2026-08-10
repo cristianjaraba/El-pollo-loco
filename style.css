@@ -1,8 +1,95 @@
-body{
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* luckiest-guy-regular - latin */
+@font-face {
+    font-display: swap;
+    /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+    font-family: 'Luckiest Guy';
+    font-style: normal;
+    font-weight: 400;
+    src: url('./fonts/luckiest-guy-v25-latin-regular.woff2') format('woff2');
+    /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+body {
+    height: 100vh;
+
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
+
+    background-image: url('img/5_background/bg_img.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }
-canvas{
-    background-color: black;
+
+h1 {
+    font-family: 'Luckiest Guy';
+    color: #FFE21A;
+    text-shadow:
+        2px 2px 0 #FF9A00,
+        4px 4px 0 #8B3A00;
+    font-size: clamp(2rem, 8vw, 4rem);
+    text-align: center;
+
+    margin-top: 20px;
+}
+
+canvas {
+
+    outline: #FFE21A 5px solid;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+}
+
+#start_img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+
+    outline: #FFE21A 5px solid;
+}
+
+.btns_container {
+
+    position: absolute;
+    top: 0px;
+    left: 0;
+    right: 0;
+    bottom: 350px;
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button {
+    background-color: transparent;
+    border: none;
+
+    cursor: pointer;
+}
+
+button img {
+    height: 80px;
+    width: auto;
+}
+
+#neu_starten_btn,
+#zur_startseite_btn{
+    display: none;
 }

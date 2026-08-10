@@ -3,10 +3,21 @@ let keyword = new Keyboard();
 let walking_sound = new Audio('./audio/pepe-walking.mp3');
 let jumping_sound = new Audio('./audio/pepe-sprung.mp3');
 
-function init() {
+function startGame() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyword);
 }
+
+function init() {
+    document.getElementById('start_btn').addEventListener('click', () => {
+        document.getElementById('start_img').style.display = 'none';
+        document.getElementById('start_btn').style.display = 'none';
+        document.getElementById('start_menu_btn').style.display = 'none';
+        startGame();
+    });
+}
+
+
 
 function handleKeyDown(event) {
     switch (event.keyCode) {
@@ -37,9 +48,7 @@ function handleKeyDown(event) {
     }
 }
 
-document.addEventListener('keydown', handleKeyDown);
-
-document.addEventListener('keyup', (event) => {
+function handleKeyUp(event) {
     switch (event.keyCode) {
         case 68:
             keyword.D = false;
@@ -62,4 +71,8 @@ document.addEventListener('keyup', (event) => {
         default:
             break;
     }
-})
+}
+
+document.addEventListener('keydown', handleKeyDown);
+document.addEventListener('keyup', handleKeyUp);
+

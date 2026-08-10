@@ -56,37 +56,89 @@ class World {
         this.checkEndOfGame();
     }
 
+    stopAllEnemies() {
+        this.level.enemies.forEach((enemy) => {
+            clearInterval(enemy.chickenInterval1);
+            clearInterval(enemy.chickenInterval2);
+        });
+    }
+
+    stopEndBoss() {
+        clearInterval(this.level.enemies[this.level.enemies.length - 1].endBossInterval1);
+        clearInterval(this.level.enemies[this.level.enemies.length - 1].endBossInterval2);
+    }
+
+    stopPepe() {
+        clearInterval(this.character.characterInterval1);
+        clearInterval(this.character.characterInterval2);
+    }
     checkEndOfGame() {
         setInterval(() => {
             if (this.gameover == true && this.endOfgame == false) {
+                this.stopAllEnemies();
+                this.stopEndBoss();
                 this.character.dead_sound_pepe.play();
                 this.gameoverSound.play();
                 this.endOfgame = true;
-                // let startTime = Date.now();
+                this.deactivateKeyboard();
+                setTimeout(() => {
+                    this.stopPepe();
+                }, 3000);
+                this.showEndButtons();
+                this.activateEndButtons();
 
-                // let test = setInterval(() => {
-                //     this.character.playAnimation(this.character.IMAGES_DEAD);
-                    
-                //     if (Date.now() - startTime >= 3000) {
-                //         clearInterval(test);
-                //     }
-                // }, 150);
-                this.clearAllIntervals();
             }
             if (this.youwin == true && this.endOfgame == false) {
+                this.stopEndBoss();
+                this.stopPepe();
+                this.stopAllEnemies();
                 this.youwinSound.play();
                 this.endOfgame = true;
-                this.clearAllIntervals();
+                this.deactivateKeyboard();
+                this.showEndButtons();
+                this.activateEndButtons();
             }
 
         }, 1000);
     }
 
-    clearAllIntervals() {
-        const interval_id = window.setInterval(function () { }, Number.MAX_SAFE_INTEGER);
-        for (let i = 1; i < interval_id; i++) {
-            window.clearInterval(i);
-        }
+    deactivateKeyboard(){
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+    }
+
+    activateKeyboard(){
+        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+    }
+
+    showEndButtons() {
+        document.getElementById('neu_starten_btn').style.display = 'flex';
+        document.getElementById('zur_startseite_btn').style.display = 'flex';
+        
+    }
+
+    activateEndButtons() {
+        document.getElementById('zur_startseite_btn').addEventListener('click', () => {location.reload();});
+        
+        document.getElementById('neu_starten_btn').addEventListener('click', () => {
+            this.character.dead_sound_pepe.pause();
+            this.gameoverSound.pause();
+            this.character.youwinSound.pause();
+            this.level.enemies[this.level.enemies.length - 1].dead_sound_boss.pause();
+            startGame();
+            this.reanimateEnemies();
+            this.activateKeyboard();
+            document.getElementById('neu_starten_btn').style.display = 'none';
+            document.getElementById('zur_startseite_btn').style.display = 'none';
+            
+        });
+    }
+
+    reanimateEnemies(){
+        this.level.enemies.forEach((enemy) => {
+            enemy.animate();
+        });
     }
 
     setWorld() {
@@ -114,10 +166,12 @@ class World {
     }
 
     checkThrowObjects() {
-        if (this.keyboard.D && this.character.bottles > 0 && !this.character.isSleeping) {
+        if (this.keyboard.D && this.character.bottles > 0) {
             let throwableObject = new ThrowableObject(this.character.x + 100, this.character.y + 100);
             this.throwableObjects.push(throwableObject);
             this.character.bottles -= 20;
+            this.character.idleStautsStart = new Date().getTime();
+            this.character.snore.pause();
         }
     }
 
@@ -143,6 +197,11 @@ class World {
                     if (enemy instanceof Endboss) {
                         this.statusBarEndBoss.setPercentage(enemy.energy * 4);
                     }
+                    else {
+                        setTimeout(() => {
+                            this.removeObjectFromArray(enemy.x, this.level.enemies);
+                        }, 3000);
+                    }
                 }
             });
         });
@@ -163,7 +222,7 @@ class World {
         bottlesList.forEach((bottle) => {
             if (this.character.isColliding(bottle)) {
                 this.bottle_sound.play();
-                this.character.bottles += 10;
+                this.character.bottles += 20;
                 this.removeObjectFromArray(bottle.x, this.level.bottles);
             }
         }
@@ -182,11 +241,11 @@ class World {
 
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
-        this.addToMap(this.character);
-        this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.throwableObjects);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.bottles);
+        this.addToMap(this.character);
+        this.addObjectsToMap(this.level.enemies);
 
         this.ctx.translate(-this.camera_x, 0);
 
