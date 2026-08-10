@@ -102,12 +102,12 @@ class World {
         }, 1000);
     }
 
-    deactivateKeyboard(){
-        document.addEventListener('keydown', handleKeyDown);
-        document.addEventListener('keyup', handleKeyUp);
+    deactivateKeyboard() {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.removeEventListener('keyup', handleKeyUp);
     }
 
-    activateKeyboard(){
+    activateKeyboard() {
         document.addEventListener('keydown', handleKeyDown);
         document.addEventListener('keyup', handleKeyUp);
     }
@@ -115,29 +115,14 @@ class World {
     showEndButtons() {
         document.getElementById('neu_starten_btn').style.display = 'flex';
         document.getElementById('zur_startseite_btn').style.display = 'flex';
-        
+
     }
 
     activateEndButtons() {
-        document.getElementById('zur_startseite_btn').addEventListener('click', () => {location.reload();});
-        
+        document.getElementById('zur_startseite_btn').addEventListener('click', () => { location.reload(); });
         document.getElementById('neu_starten_btn').addEventListener('click', () => {
-            this.character.dead_sound_pepe.pause();
-            this.gameoverSound.pause();
-            this.character.youwinSound.pause();
-            this.level.enemies[this.level.enemies.length - 1].dead_sound_boss.pause();
-            startGame();
-            this.reanimateEnemies();
-            this.activateKeyboard();
-            document.getElementById('neu_starten_btn').style.display = 'none';
-            document.getElementById('zur_startseite_btn').style.display = 'none';
-            
-        });
-    }
-
-    reanimateEnemies(){
-        this.level.enemies.forEach((enemy) => {
-            enemy.animate();
+            sessionStorage.setItem('restartGame', 'true');
+            location.reload();
         });
     }
 

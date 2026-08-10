@@ -61,6 +61,8 @@ canvas {
     margin: auto;
 
     outline: #FFE21A 5px solid;
+
+    display: none;
 }
 
 .btns_container {

@@ -9,12 +9,23 @@ function startGame() {
 }
 
 function init() {
-    document.getElementById('start_btn').addEventListener('click', () => {
+    if (sessionStorage.getItem('restartGame') === 'true') {
+        document.getElementById('start_img').style.display = 'none';
+         document.getElementById('start_img').style.display = 'none';
+        document.getElementById('start_btn').style.display = 'none';
+        document.getElementById('start_menu_btn').style.display = 'none';
+        sessionStorage.removeItem('restartGame');
+        startGame();
+    }
+    else {
+        document.getElementById('start_img').style.display = 'flex';
+        document.getElementById('start_btn').addEventListener('click', () => {
         document.getElementById('start_img').style.display = 'none';
         document.getElementById('start_btn').style.display = 'none';
         document.getElementById('start_menu_btn').style.display = 'none';
         startGame();
-    });
+            });
+    }
 }
 
 
