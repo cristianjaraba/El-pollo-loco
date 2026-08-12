@@ -1,58 +1,44 @@
 let world;
-let keyword = new Keyboard();
-let walking_sound = new Audio('./audio/pepe-walking.mp3');
-let jumping_sound = new Audio('./audio/pepe-sprung.mp3');
+let keyboard = new Keyboard();
 
 function startGame() {
     canvas = document.getElementById('canvas');
-    world = new World(canvas, keyword);
+    world = new World(canvas, keyboard);
 }
 
 function init() {
-    if (sessionStorage.getItem('restartGame') === 'true') {
-        document.getElementById('start_img').style.display = 'none';
-         document.getElementById('start_img').style.display = 'none';
-        document.getElementById('start_btn').style.display = 'none';
-        document.getElementById('start_menu_btn').style.display = 'none';
-        sessionStorage.removeItem('restartGame');
-        startGame();
-    }
-    else {
-        document.getElementById('start_img').style.display = 'flex';
-        document.getElementById('start_btn').addEventListener('click', () => {
+    document.getElementById('start_img').style.display = 'flex';
+    document.getElementById('start_btn').style.display = 'flex';
+    document.getElementById('start_menu_btn').style.display = 'flex';
+
+    document.getElementById('start_btn').onclick = () => {
         document.getElementById('start_img').style.display = 'none';
         document.getElementById('start_btn').style.display = 'none';
         document.getElementById('start_menu_btn').style.display = 'none';
+
         startGame();
-            });
-    }
+    };
 }
-
-
 
 function handleKeyDown(event) {
     switch (event.keyCode) {
         case 68:
-            keyword.D = true;
+            keyboard.D = true;
             break;
         case 40:
-            keyword.DOWN = true;
+            keyboard.DOWN = true;
             break;
         case 38:
-            jumping_sound.play();
-            keyword.UP = true;
+            keyboard.UP = true;
             break;
         case 39:
-            walking_sound.play();
-            keyword.RIGHT = true;
+            keyboard.RIGHT = true;
             break;
         case 37:
-            walking_sound.play();
-            keyword.LEFT = true;
+            keyboard.LEFT = true;
             break;
         case 32:
-            jumping_sound.play();
-            keyword.SPACE = true;
+            keyboard.SPACE = true;
             break;
         default:
             break;
@@ -62,22 +48,22 @@ function handleKeyDown(event) {
 function handleKeyUp(event) {
     switch (event.keyCode) {
         case 68:
-            keyword.D = false;
+            keyboard.D = false;
             break;
         case 40:
-            keyword.DOWN = false;
+            keyboard.DOWN = false;
             break;
         case 38:
-            keyword.UP = false;
+            keyboard.UP = false;
             break;
         case 39:
-            keyword.RIGHT = false;
+            keyboard.RIGHT = false;
             break;
         case 37:
-            keyword.LEFT = false;
+            keyboard.LEFT = false;
             break;
         case 32:
-            keyword.SPACE = false;
+            keyboard.SPACE = false;
             break;
         default:
             break;

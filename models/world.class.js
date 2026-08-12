@@ -1,6 +1,6 @@
 class World {
     character = new Character();
-    level = level1;
+    level;
     ctx;
     canvas;
     keyboard;
@@ -34,19 +34,25 @@ class World {
         'img/7_statusbars/2_statusbar_endboss/blue/blue100.png'
     ], 480, 5)
     throwableObjects = [];
-    coin_sound = new Audio('./audio/pick_coin.mp3');
-    bottle_sound = new Audio('./audio/pick_bottle.mp3');
-    chicken_bg = new Audio('./audio/chicken-bg.mp3');
-    dead_chicken_sound = new Audio('audio/dead_chicken.mp3');
     gameoveImg = new BackgroundObject('img/You won, you lost/Game Over.png', 0, 500, 300);
     youwinImg = new BackgroundObject('img/You won, you lost/You Win A.png', 0, 500, 300);
-    gameoverSound = new Audio('audio/gameover.mp3');
-    youwinSound = new Audio('audio/youwin.mp3');
+
     endOfgame = false;
     gameover = false;
     youwin = false;
+    worldInterval1;
+    endGameInterval;
+    animationFrameId;
+    stopPepeTimeout;
 
     constructor(canvas, keyboard) {
+        this.level = new Level(
+            generateEnemiesList(),
+            [new Cloud(), new Cloud(), new Cloud(), new Cloud(), new Cloud()],
+            generateBackgroundObjectsList(),
+            generateCoinsList(),
+            generateBottlesList()
+        );
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
         this.keyboard = keyboard;
@@ -54,6 +60,17 @@ class World {
         this.setWorld();
         this.run();
         this.checkEndOfGame();
+    }
+
+    destroy() {
+        clearInterval(this.worldInterval1);
+        clearInterval(this.endGameInterval);
+        cancelAnimationFrame(this.animationFrameId);
+        clearTimeout(this.stopPepeTimeout);
+    }
+    stopCollectableObjects() {
+        this.level.bottles.forEach((bottle) => { clearInterval(bottle.collectablesInterval); });
+        this.level.coins.forEach((coin) => { clearInterval(coin.collectablesInterval); });
     }
 
     stopAllEnemies() {
@@ -64,24 +81,30 @@ class World {
     }
 
     stopEndBoss() {
-        clearInterval(this.level.enemies[this.level.enemies.length - 1].endBossInterval1);
-        clearInterval(this.level.enemies[this.level.enemies.length - 1].endBossInterval2);
+        const endBoss = this.level.enemies[this.level.enemies.length - 1];
+        clearInterval(endBoss.endBossInterval1);
+        clearInterval(endBoss.endBossInterval2);
     }
 
     stopPepe() {
         clearInterval(this.character.characterInterval1);
         clearInterval(this.character.characterInterval2);
     }
+    stopClouds(){
+        this.level.clouds.forEach((cloud)=>{
+            clearInterval(cloud.cloudInterval);
+        });
+    }
     checkEndOfGame() {
-        setInterval(() => {
+        this.endGameInterval = setInterval(() => {
             if (this.gameover == true && this.endOfgame == false) {
                 this.stopAllEnemies();
                 this.stopEndBoss();
-                this.character.dead_sound_pepe.play();
-                this.gameoverSound.play();
+                this.stopCollectableObjects();
+                this.stopClouds();
                 this.endOfgame = true;
                 this.deactivateKeyboard();
-                setTimeout(() => {
+                this.stopPepeTimeout = setTimeout(() => {
                     this.stopPepe();
                 }, 3000);
                 this.showEndButtons();
@@ -89,10 +112,11 @@ class World {
 
             }
             if (this.youwin == true && this.endOfgame == false) {
+                this.stopCollectableObjects();
                 this.stopEndBoss();
                 this.stopPepe();
                 this.stopAllEnemies();
-                this.youwinSound.play();
+                this.stopClouds();
                 this.endOfgame = true;
                 this.deactivateKeyboard();
                 this.showEndButtons();
@@ -118,12 +142,22 @@ class World {
 
     }
 
+
     activateEndButtons() {
-        document.getElementById('zur_startseite_btn').addEventListener('click', () => { location.reload(); });
-        document.getElementById('neu_starten_btn').addEventListener('click', () => {
-            sessionStorage.setItem('restartGame', 'true');
-            location.reload();
-        });
+        document.getElementById('zur_startseite_btn').onclick = () => {
+            this.destroy();
+            init();
+            document.getElementById('neu_starten_btn').style.display = 'none';
+            document.getElementById('zur_startseite_btn').style.display = 'none';
+            world.activateKeyboard();
+        };
+        document.getElementById('neu_starten_btn').onclick = () => {
+            document.getElementById('neu_starten_btn').style.display = 'none';
+            document.getElementById('zur_startseite_btn').style.display = 'none';
+            this.destroy();
+            world = new World(canvas, keyboard);
+            world.activateKeyboard();
+        };
     }
 
     setWorld() {
@@ -131,7 +165,7 @@ class World {
     }
 
     run() {
-        let worldInterval1 = setInterval(() => {
+        this.worldInterval1 = setInterval(() => {
             this.checkBottles();
             this.checkCoins();
             this.checkCollisions();
@@ -154,9 +188,8 @@ class World {
         if (this.keyboard.D && this.character.bottles > 0) {
             let throwableObject = new ThrowableObject(this.character.x + 100, this.character.y + 100);
             this.throwableObjects.push(throwableObject);
-            this.character.bottles -= 20;
+            this.character.bottles -= 10;
             this.character.idleStautsStart = new Date().getTime();
-            this.character.snore.pause();
         }
     }
 
@@ -176,17 +209,18 @@ class World {
         this.throwableObjects.forEach((bottle) => {
             this.level.enemies.forEach((enemy) => {
                 if (enemy.isColliding(bottle)) {
-                    enemy.hit();
-                    this.dead_chicken_sound.play();
-                    this.removeObjectFromArray(bottle.x, this.throwableObjects);
                     if (enemy instanceof Endboss) {
+                        bottle.playAnimation(bottle.IMAGES_SPLASH);
+                        enemy.hit();
                         this.statusBarEndBoss.setPercentage(enemy.energy * 4);
                     }
                     else {
+                        enemy.hit();
                         setTimeout(() => {
                             this.removeObjectFromArray(enemy.x, this.level.enemies);
                         }, 3000);
                     }
+                    this.removeObjectFromArray(bottle.x, this.throwableObjects);
                 }
             });
         });
@@ -195,7 +229,6 @@ class World {
     collectCoins(coinsList) {
         coinsList.forEach((coin) => {
             if (this.character.isColliding(coin)) {
-                this.coin_sound.play();
                 this.character.coins += 10;
                 this.removeObjectFromArray(coin.x, this.level.coins);
             }
@@ -206,8 +239,7 @@ class World {
     collectBottles(bottlesList) {
         bottlesList.forEach((bottle) => {
             if (this.character.isColliding(bottle)) {
-                this.bottle_sound.play();
-                this.character.bottles += 20;
+                this.character.bottles += 10;
                 this.removeObjectFromArray(bottle.x, this.level.bottles);
             }
         }
@@ -226,11 +258,11 @@ class World {
 
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
-        this.addObjectsToMap(this.throwableObjects);
         this.addObjectsToMap(this.level.coins);
-        this.addObjectsToMap(this.level.bottles);
         this.addToMap(this.character);
         this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.level.bottles);
+        this.addObjectsToMap(this.throwableObjects);
 
         this.ctx.translate(-this.camera_x, 0);
 
@@ -252,7 +284,7 @@ class World {
         }
 
         let self = this;
-        requestAnimationFrame(function () {
+        this.animationFrameId = requestAnimationFrame(function () {
             self.draw();
         });
     }

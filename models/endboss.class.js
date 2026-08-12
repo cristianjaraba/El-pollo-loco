@@ -23,9 +23,6 @@ class Endboss extends MovableObject{
         'img/4_enemie_boss_chicken/4_hurt/G22.png', 
         'img/4_enemie_boss_chicken/4_hurt/G23.png'
     ];
-    dead_sound_boss = new Audio('./audio/endboss_dead.mp3');
-    hit_sound_boss = new Audio('./audio/endboss_hurt.mp3');
-    youwinSound = new Audio('audio/youwin.mp3');
     endBossInterval1;
     endBossInterval2;
 
@@ -44,13 +41,10 @@ class Endboss extends MovableObject{
         }, 1000 / 60);
         this.endBossInterval2 = setInterval(() => {
             if (this.isDead()) {
-                this.dead_sound_boss.play();
                 this.playAnimation(this.IMAGES_DEAD);
-                this.youwinSound.play();
             }
 
             else if(this.isHurt()){
-                this.hit_sound_boss.play();
                 this.playAnimation(this.IMAGES_HURT);
             }
             else{

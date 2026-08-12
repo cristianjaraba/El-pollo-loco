@@ -59,12 +59,7 @@ class Character extends MovableObject {
     ];
     coins = 0;
     bottles = 0;
-    // walking_sound = new Audio('./audio/pepe-walking.mp3');
-    // jumping_sound = new Audio('./audio/pepe-sprung.mp3');
-    dead_sound_pepe = new Audio('./audio/pepe_dead.mp3');
-    hit_sound_pepe = new Audio('./audio/pepe_hurt.mp3');
     idleStautsStart;
-    snore = new Audio('audio/snore.mp3');
     characterInterval1;
     characterInterval2;
 
@@ -103,12 +98,10 @@ class Character extends MovableObject {
         this.characterInterval2 = setInterval(() => {
 
             if (this.isDead()) {
-                this.hit_sound_pepe.pause();
                 this.playAnimation(this.IMAGES_DEAD);
             }
 
             else if (this.isHurt()) {
-                this.hit_sound_pepe.play();
                 this.playAnimation(this.IMAGES_HURT);
                 this.idleStautsStart = new Date().getTime();
             }
@@ -116,12 +109,10 @@ class Character extends MovableObject {
             else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
                 this.idleStautsStart = new Date().getTime();
-                this.snore.pause(); 
             }
             else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
                     this.playAnimation(this.IMAGES_WALKING);
                     this.idleStautsStart = new Date().getTime();
-                    this.snore.pause();
                 }
             else{
                 this.playIdleAnimiations();
@@ -133,7 +124,6 @@ class Character extends MovableObject {
         let timepassedIdleStatus = (new Date().getTime() - this.idleStautsStart) / 1000;
                 if (timepassedIdleStatus > 5) {
                     this.playAnimation(this.IMAGES_LONGIDLE);
-                        this.snore.play();
                 } else {
                     this.playAnimation(this.IMAGES_IDLE);
                 }

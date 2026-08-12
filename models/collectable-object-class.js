@@ -1,5 +1,7 @@
 class CollectableObject extends DrawableObject{
 
+    collectablesInterval;
+
     constructor(IMAGES, x, y, height, width) {
         super();
         this.IMAGES = IMAGES;
@@ -15,7 +17,7 @@ class CollectableObject extends DrawableObject{
         let index = 0;
         let path = this.IMAGES[index];
         this.img = this.imageCache[path];
-        let collectablesInterval = setInterval(()=>{
+        this.collectablesInterval = setInterval(()=>{
             if (index == 0) {
                 index = 1;
                 

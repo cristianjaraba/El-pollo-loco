@@ -92,6 +92,8 @@ button img {
 }
 
 #neu_starten_btn,
-#zur_startseite_btn{
+#zur_startseite_btn,
+#start_btn,
+#start_menu_btn{
     display: none;
 }

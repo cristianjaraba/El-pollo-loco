@@ -1,5 +1,4 @@
 class ThrowableObject extends MovableObject {
-    throw_sound = new Audio('./audio/throw-bottle.mp3');
     IMAGES_ROTATING = ['img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
         'img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png',
         'img/6_salsa_bottle/bottle_rotation/3_bottle_rotation.png',
@@ -12,7 +11,6 @@ class ThrowableObject extends MovableObject {
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/5_bottle_splash.png',
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png'
     ];
-    bottel_hit_sound = new Audio('./audio/bottle_hit.mp3');
 
     constructor(x, y) {
         super().loadImage('img/6_salsa_bottle/salsa_bottle.png');
@@ -26,7 +24,6 @@ class ThrowableObject extends MovableObject {
     }
 
     throw() {
-        this.throw_sound.play();
         this.speedY = 30;
         this.applyGravity();
         let animationIntervalBottle1 = setInterval(() => {
@@ -35,7 +32,6 @@ class ThrowableObject extends MovableObject {
         let animationIntervalBottle2 = setInterval(() => {
             if (this.y > 350) {
                 this.playAnimation(this.IMAGES_SPLASH);
-                this.bottel_hit_sound.play();
 
                 clearInterval(animationIntervalBottle2);
             } else {
