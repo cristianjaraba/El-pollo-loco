@@ -11,6 +11,8 @@ class ThrowableObject extends MovableObject {
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/5_bottle_splash.png',
         'img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png'
     ];
+    animationIntervalBottle1;
+    animationIntervalBottle2;
 
     constructor(x, y) {
         super().loadImage('img/6_salsa_bottle/salsa_bottle.png');
@@ -26,14 +28,14 @@ class ThrowableObject extends MovableObject {
     throw() {
         this.speedY = 30;
         this.applyGravity();
-        let animationIntervalBottle1 = setInterval(() => {
+        this.animationIntervalBottle1 = setInterval(() => {
             this.x += 5;
         }, 25);
-        let animationIntervalBottle2 = setInterval(() => {
+        this.animationIntervalBottle2 = setInterval(() => {
             if (this.y > 350) {
                 this.playAnimation(this.IMAGES_SPLASH);
 
-                clearInterval(animationIntervalBottle2);
+                clearInterval(this.animationIntervalBottle2);
             } else {
                 this.playAnimation(this.IMAGES_ROTATING);
             }

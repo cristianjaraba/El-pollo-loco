@@ -81,50 +81,63 @@ class World {
     }
 
     stopEndBoss() {
-        const endBoss = this.level.enemies[this.level.enemies.length - 1];
+    const endBoss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+    if (endBoss) {
         clearInterval(endBoss.endBossInterval1);
         clearInterval(endBoss.endBossInterval2);
     }
+}
 
     stopPepe() {
         clearInterval(this.character.characterInterval1);
         clearInterval(this.character.characterInterval2);
+        clearInterval(this.character.gravityInterval);
     }
-    stopClouds(){
-        this.level.clouds.forEach((cloud)=>{
+    stopClouds() {
+        this.level.clouds.forEach((cloud) => {
             clearInterval(cloud.cloudInterval);
         });
     }
+    stopThrowableObjects() {
+    this.throwableObjects.forEach((bottle) => {
+        clearInterval(bottle.animationIntervalBottle1);
+        clearInterval(bottle.animationIntervalBottle2);
+        clearInterval(bottle.gravityInterval);
+    });
+}
     checkEndOfGame() {
-        this.endGameInterval = setInterval(() => {
-            if (this.gameover == true && this.endOfgame == false) {
-                this.stopAllEnemies();
-                this.stopEndBoss();
-                this.stopCollectableObjects();
-                this.stopClouds();
-                this.endOfgame = true;
-                this.deactivateKeyboard();
-                this.stopPepeTimeout = setTimeout(() => {
-                    this.stopPepe();
-                }, 3000);
-                this.showEndButtons();
-                this.activateEndButtons();
-
-            }
-            if (this.youwin == true && this.endOfgame == false) {
-                this.stopCollectableObjects();
-                this.stopEndBoss();
+    this.endGameInterval = setInterval(() => {
+        if (this.gameover == true && this.endOfgame == false) {
+            this.stopThrowableObjects();
+            this.stopAllEnemies();
+            this.stopEndBoss();
+            this.stopCollectableObjects();
+            this.stopClouds();
+            this.endOfgame = true;
+            this.deactivateKeyboard();
+            this.stopPepeTimeout = setTimeout(() => {
                 this.stopPepe();
-                this.stopAllEnemies();
-                this.stopClouds();
-                this.endOfgame = true;
-                this.deactivateKeyboard();
-                this.showEndButtons();
-                this.activateEndButtons();
-            }
+            }, 3000);
+            this.showEndButtons();
+            this.activateEndButtons();
+            clearInterval(this.endGameInterval);
+        }
+        if (this.youwin == true && this.endOfgame == false) {
+            this.stopThrowableObjects();
+            this.stopCollectableObjects();
+            this.stopEndBoss();
+            this.stopPepe();
+            this.stopAllEnemies();
+            this.stopClouds();
+            this.endOfgame = true;
+            this.deactivateKeyboard();
+            this.showEndButtons();
+            this.activateEndButtons();
+            clearInterval(this.endGameInterval);
+        }
 
-        }, 1000);
-    }
+    }, 1000);
+}
 
     deactivateKeyboard() {
         document.removeEventListener('keydown', handleKeyDown);
@@ -149,12 +162,14 @@ class World {
             init();
             document.getElementById('neu_starten_btn').style.display = 'none';
             document.getElementById('zur_startseite_btn').style.display = 'none';
+            keyboard = new Keyboard();
             world.activateKeyboard();
         };
         document.getElementById('neu_starten_btn').onclick = () => {
             document.getElementById('neu_starten_btn').style.display = 'none';
             document.getElementById('zur_startseite_btn').style.display = 'none';
             this.destroy();
+            keyboard = new Keyboard();
             world = new World(canvas, keyboard);
             world.activateKeyboard();
         };
@@ -168,12 +183,14 @@ class World {
         this.worldInterval1 = setInterval(() => {
             this.checkBottles();
             this.checkCoins();
-            this.checkCollisions();
+            if (!this.checkCollisionsOnTop()) {
+                this.checkCollisions();
+            }
             this.checkBottleImpactOnChicken();
             this.collectCoins(this.level.coins);
             this.collectBottles(this.level.bottles);
             this.checkThrowObjects();
-        }, 200);
+        }, 100);
     }
 
     checkCoins() {
@@ -193,6 +210,21 @@ class World {
         }
     }
 
+    checkCollisionsOnTop() {
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.collisionTop(enemy) &&
+                !(enemy instanceof Endboss)
+            ) {
+                this.character.speedY = 20;
+                enemy.hit();
+                setTimeout(() => {
+                    this.removeObjectFromArray(enemy.x, this.level.enemies)
+                }, 300);
+                return true;
+            }
+            return false;
+        });
+    }
 
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
@@ -201,8 +233,6 @@ class World {
                 this.statusBarLife.setPercentage(this.character.energy);
             }
         });
-        if (this.character.isDead()) {
-        }
     }
 
     checkBottleImpactOnChicken() {
@@ -210,17 +240,20 @@ class World {
             this.level.enemies.forEach((enemy) => {
                 if (enemy.isColliding(bottle)) {
                     if (enemy instanceof Endboss) {
-                        bottle.playAnimation(bottle.IMAGES_SPLASH);
+                        this.removeObjectFromArray(bottle.x, this.throwableObjects);
                         enemy.hit();
                         this.statusBarEndBoss.setPercentage(enemy.energy * 4);
                     }
                     else {
+                        bottle.playAnimation(bottle.IMAGES_SPLASH);
                         enemy.hit();
                         setTimeout(() => {
+                            this.removeObjectFromArray(bottle.x, this.throwableObjects);
+                        }, 300);
+                        setTimeout(() => {
                             this.removeObjectFromArray(enemy.x, this.level.enemies);
-                        }, 3000);
+                        }, 300);
                     }
-                    this.removeObjectFromArray(bottle.x, this.throwableObjects);
                 }
             });
         });
@@ -269,7 +302,12 @@ class World {
         this.addToMap(this.statusBarLife);
         this.addToMap(this.statusBarCoins);
         this.addToMap(this.statusBarBottles);
-        this.addToMap(this.statusBarEndBoss);
+
+        const endboss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+
+        if (endboss && this.isVisible(endboss)) {
+            this.addToMap(this.statusBarEndBoss);
+        }
 
         if (this.character.isDead()) {
             this.gameoveImg.setInTheMiddle();
@@ -277,7 +315,7 @@ class World {
             this.gameover = true;
         }
 
-        if (this.level.enemies[this.level.enemies.length - 1].isDead()) {
+        if (endboss && endboss.isDead()) {
             this.youwinImg.setInTheMiddle();
             this.addToMap(this.youwinImg);
             this.youwin = true;
@@ -287,6 +325,12 @@ class World {
         this.animationFrameId = requestAnimationFrame(function () {
             self.draw();
         });
+    }
+
+    isVisible(boss) {
+        const screenX = boss.x + this.camera_x;
+        return screenX + boss.width > 0 &&
+            screenX < 720;
     }
 
     addObjectsToMap(objects) {

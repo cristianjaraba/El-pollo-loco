@@ -10,7 +10,7 @@ class Chick extends Chicken {
         this.IMAGES_WALKING = IMAGES_WALKING;
         this.IMAGE_DEAD = IMAGE_DEAD;
 
-        this.y = Math.floor(Math.random() * (410 - 400 + 1)) + 400;
+        this.y = 370;
 
     }
 }

@@ -5,9 +5,10 @@ class MovableObject extends DrawableObject{
     acceleration = 2.5;
     energy = 100;
     lastHit = 0;
+    gravityInterval;
 
     applyGravity() {
-        let gravityInterval = setInterval(() => {
+        this.gravityInterval = setInterval(() => {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
@@ -24,12 +25,33 @@ class MovableObject extends DrawableObject{
         }
     }
 
-    isColliding(mo){
-        return this.x + this.width > mo.x &&
-        this.y + this.height > mo.y &&
-        this.x < mo.x &&
-        this.y < mo.y + mo.height;
+    isColliding(mo) {
+    let margin = 20;
+    if (mo instanceof ThrowableObject) {
+        margin = 0;
     }
+
+    return this.x + this.width - margin > mo.x + margin &&
+           this.y + this.height - margin > mo.y + margin &&
+           this.x + margin < mo.x + mo.width - margin &&
+           this.y + margin < mo.y + mo.height - margin;
+}
+
+    collisionTop(mo) {
+    let distanceY = 10;
+    let distanceX = 5;
+    if (mo instanceof Chick) {
+        distanceX = 10;
+    }
+
+    return this.isAboveGround() &&
+           this.speedY < 0 &&
+           this.x + this.width > mo.x - distanceX &&
+           this.x < mo.x + mo.width + distanceX &&
+           this.y < mo.y &&
+           this.y + this.height >= mo.y - distanceY;
+}
+    
 
     hit(){
         this.energy -= 5;

@@ -9,12 +9,12 @@ function startGame() {
 function init() {
     document.getElementById('start_img').style.display = 'flex';
     document.getElementById('start_btn').style.display = 'flex';
-    document.getElementById('start_menu_btn').style.display = 'flex';
+    document.getElementById('anleitung_btn').style.display = 'flex';
 
     document.getElementById('start_btn').onclick = () => {
         document.getElementById('start_img').style.display = 'none';
         document.getElementById('start_btn').style.display = 'none';
-        document.getElementById('start_menu_btn').style.display = 'none';
+        document.getElementById('anleitung_btn').style.display = 'none';
 
         startGame();
     };
@@ -72,4 +72,15 @@ function handleKeyUp(event) {
 
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
+
+const dialog = document.getElementById('dialog');
+
+document.getElementById('anleitung_btn').onclick = ()=>{
+    dialog.showModal();
+}
+
+document.getElementById('close-dialog').onclick = ()=>{
+    dialog.close();
+}
+
 

@@ -30,6 +30,7 @@ body {
 
 h1 {
     font-family: 'Luckiest Guy';
+    letter-spacing: 0.5px;
     color: #FFE21A;
     text-shadow:
         2px 2px 0 #FF9A00,
@@ -50,6 +51,8 @@ canvas {
     right: 0;
     bottom: 0;
     margin: auto;
+
+    border-radius: 10px;
 }
 
 #start_img {
@@ -63,6 +66,8 @@ canvas {
     outline: #FFE21A 5px solid;
 
     display: none;
+
+    border-radius: 10px;
 }
 
 .btns_container {
@@ -94,6 +99,52 @@ button img {
 #neu_starten_btn,
 #zur_startseite_btn,
 #start_btn,
-#start_menu_btn{
+#anleitung_btn{
     display: none;
+}
+
+dialog {
+    width: 420px;
+    height: 480px;
+
+    position: absolute;
+    top: 0px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+
+    background-image: url('./img/5_background/bg_dialog.png');
+    background-position: top;
+    background-size: cover;
+    /* background-color: #D08A5A;
+    background-position: center; */
+
+    border: solid 5px #C0272B; 
+    border-radius: 10px;
+
+    color: #03381d;
+    font-size: large;
+    font-family: 'Luckiest Guy';
+    letter-spacing: 0.5px;
+
+    padding: 0px;
+}
+
+#container1{
+    display: flex;
+    justify-content: end;
+}
+
+#close-dialog img{
+    height: 50px;
+    width: auto;
+}
+
+.anleitung{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 10px;
 }
