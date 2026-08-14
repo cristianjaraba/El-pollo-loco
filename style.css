@@ -84,11 +84,32 @@ canvas {
     justify-content: center;
 }
 
-button {
+.btns_container button {
     background-color: transparent;
     border: none;
 
     cursor: pointer;
+
+    font-family: 'Luckiest Guy';
+    letter-spacing: 0.5px;
+    color: #FFE21A;
+    /* text-shadow:
+        2px 2px 0 #FF9A00,
+        4px 4px 0 #8B3A00; */
+    font-size: clamp(0.5rem, 2vw, 1rem);
+    text-align: center;
+}
+
+span{
+    background-color: #c03136;
+
+    padding: 5px;
+
+    border-radius: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button img {
@@ -99,7 +120,7 @@ button img {
 #neu_starten_btn,
 #zur_startseite_btn,
 #start_btn,
-#anleitung_btn{
+#anleitung_btn {
     display: none;
 }
 
@@ -120,7 +141,7 @@ dialog {
     /* background-color: #D08A5A;
     background-position: center; */
 
-    border: solid 5px #C0272B; 
+    border: solid 5px #C0272B;
     border-radius: 10px;
 
     color: #03381d;
@@ -131,20 +152,62 @@ dialog {
     padding: 0px;
 }
 
-#container1{
+#container1 {
     display: flex;
     justify-content: end;
 }
 
-#close-dialog img{
+#close-dialog img {
     height: 50px;
     width: auto;
 }
 
-.anleitung{
+#close-dialog{
+    background-color: transparent;
+
+    border: none;
+
+    cursor: pointer;
+}
+
+.anleitung {
     display: flex;
     flex-direction: column;
     gap: 10px;
 
     padding: 10px;
+}
+
+.volume-off,
+.volume-on {
+    display: none;
+}
+
+.volume-off svg,
+.volume-on svg {
+    height: 25px;
+    width: 25px;
+}
+
+#volume-on,
+#volume-off {
+    background-color: transparent;
+    border: none;
+
+    cursor: pointer;
+
+    width: fit-content;
+    height: fit-content;
+}
+
+.volume-on,
+.volume-off {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 400px;
+    margin: auto;
+    z-index: 9999;
+    cursor: pointer;
 }

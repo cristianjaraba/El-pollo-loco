@@ -1,9 +1,12 @@
+const dialog = document.getElementById('dialog');
 let world;
 let keyboard = new Keyboard();
+let sound = getSoundFromLocalStorage();
 
 function startGame() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
+    showVolumeBtns();
 }
 
 function init() {
@@ -17,7 +20,44 @@ function init() {
         document.getElementById('anleitung_btn').style.display = 'none';
 
         startGame();
+        AudioHub.playOne(AudioHub.CHICKEN_BG);
+        AudioHub.playLoop(AudioHub.BG_MUSIC, 21000);
     };
+}
+
+    function getSoundFromLocalStorage(){
+
+    let data = localStorage.getItem('sound');
+
+    if (data != null) {
+        if (data == 'true') {
+            AudioHub.isMuted = false;
+            return true;
+        } 
+        else {
+            AudioHub.isMuted = true;
+            return false;
+        }
+    } 
+    else {
+        AudioHub.isMuted = false;
+        return true;
+    }
+}
+
+function showVolumeBtns() {
+    if (sound) {
+        document.getElementById('volume-off').style.display = 'none';
+        document.getElementById('volume-on').style.display = 'flex';
+    } else {
+        document.getElementById('volume-off').style.display = 'flex';
+        document.getElementById('volume-on').style.display = 'none';
+    }
+}
+
+function hideVolumeBtns() {
+    document.getElementById('volume-off').style.display = 'none';
+        document.getElementById('volume-on').style.display = 'none';
 }
 
 function handleKeyDown(event) {
@@ -73,7 +113,7 @@ function handleKeyUp(event) {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
-const dialog = document.getElementById('dialog');
+
 
 document.getElementById('anleitung_btn').onclick = ()=>{
     dialog.showModal();
@@ -83,4 +123,18 @@ document.getElementById('close-dialog').onclick = ()=>{
     dialog.close();
 }
 
+document.getElementById('volume-on').onclick = ()=>{
+    document.getElementById('volume-on').style.display = 'none';
+    document.getElementById('volume-off').style.display = 'flex';
+    AudioHub.mute();
+    sound = false;
+    localStorage.setItem('sound', 'false');
+}
 
+document.getElementById('volume-off').onclick = ()=>{
+    document.getElementById('volume-off').style.display = 'none';
+    document.getElementById('volume-on').style.display = 'flex';
+    AudioHub.unmute();
+    sound = true;
+    localStorage.setItem('sound', 'true');
+}

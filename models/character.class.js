@@ -62,6 +62,7 @@ class Character extends MovableObject {
     idleStautsStart;
     characterInterval1;
     characterInterval2;
+    snoreInterval;
 
     constructor() {
         super().loadImage('/img/2_character_pepe/2_walk/W-21.png');
@@ -90,6 +91,7 @@ class Character extends MovableObject {
             }
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+                AudioHub.playOne(AudioHub.PEPE_JUMPING);
                 this.jump();
             }
             this.world.camera_x = -this.x + 100;
@@ -98,19 +100,24 @@ class Character extends MovableObject {
         this.characterInterval2 = setInterval(() => {
 
             if (this.isDead()) {
+                this.stopSnoringSound();
                 this.playAnimation(this.IMAGES_DEAD);
             }
 
             else if (this.isHurt()) {
+                this.stopSnoringSound();
                 this.playAnimation(this.IMAGES_HURT);
                 this.idleStautsStart = new Date().getTime();
             }
 
             else if (this.isAboveGround()) {
+                this.stopSnoringSound();
                 this.playAnimation(this.IMAGES_JUMPING);
                 this.idleStautsStart = new Date().getTime();
             }
             else if ((this.world.keyboard.RIGHT || this.world.keyboard.LEFT)) {
+                    this.stopSnoringSound();
+                    AudioHub.playOne(AudioHub.PEPE_WALKING);
                     this.playAnimation(this.IMAGES_WALKING);
                     this.idleStautsStart = new Date().getTime();
                 }
@@ -120,13 +127,27 @@ class Character extends MovableObject {
             }, 150); 
     }
 
-    playIdleAnimiations(){   
-        let timepassedIdleStatus = (new Date().getTime() - this.idleStautsStart) / 1000;
-                if (timepassedIdleStatus > 5) {
-                    this.playAnimation(this.IMAGES_LONGIDLE);
-                } else {
-                    this.playAnimation(this.IMAGES_IDLE);
+    stopSnoringSound(){
+        if (this.snoreInterval) {
+                    clearInterval(this.snoreInterval);                 
+                    this.snoreInterval = null;
                 }
     }
+
+    playIdleAnimiations(){   
+    let timepassedIdleStatus = (new Date().getTime() - this.idleStautsStart) / 1000;
+    if (timepassedIdleStatus > 5) {
+        this.playAnimation(this.IMAGES_LONGIDLE);
+        if (!this.snoreInterval) {              
+            this.snoreInterval = setInterval(()=>{
+                AudioHub.playOne(AudioHub.PEPE_SNORE);
+            }, 2000);
+        }
+    } else {
+        this.playAnimation(this.IMAGES_IDLE);
+        clearInterval(this.snoreInterval);                 
+        this.snoreInterval = null;
+    }
+}
 
 }

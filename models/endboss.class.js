@@ -42,6 +42,7 @@ class Endboss extends MovableObject{
         this.endBossInterval2 = setInterval(() => {
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
+                AudioHub.playOne(AudioHub.ENDBOSS_DEAD);
             }
 
             else if(this.isHurt()){

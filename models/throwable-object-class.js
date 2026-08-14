@@ -33,6 +33,7 @@ class ThrowableObject extends MovableObject {
         }, 25);
         this.animationIntervalBottle2 = setInterval(() => {
             if (this.y > 350) {
+                AudioHub.playOne(AudioHub.BOTTLE_HIT);
                 this.playAnimation(this.IMAGES_SPLASH);
 
                 clearInterval(this.animationIntervalBottle2);

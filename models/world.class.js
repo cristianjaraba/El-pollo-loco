@@ -41,9 +41,11 @@ class World {
     gameover = false;
     youwin = false;
     worldInterval1;
+    worldInterval2;
     endGameInterval;
     animationFrameId;
     stopPepeTimeout;
+    lastHurtSound = 0;
 
     constructor(canvas, keyboard) {
         this.level = new Level(
@@ -59,11 +61,13 @@ class World {
         this.draw();
         this.setWorld();
         this.run();
+        this.runSlowlier();
         this.checkEndOfGame();
     }
 
     destroy() {
         clearInterval(this.worldInterval1);
+        clearInterval(this.worldInterval2);
         clearInterval(this.endGameInterval);
         cancelAnimationFrame(this.animationFrameId);
         clearTimeout(this.stopPepeTimeout);
@@ -81,17 +85,18 @@ class World {
     }
 
     stopEndBoss() {
-    const endBoss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-    if (endBoss) {
-        clearInterval(endBoss.endBossInterval1);
-        clearInterval(endBoss.endBossInterval2);
+        const endBoss = this.level.enemies.find(enemy => enemy instanceof Endboss);
+        if (endBoss) {
+            clearInterval(endBoss.endBossInterval1);
+            clearInterval(endBoss.endBossInterval2);
+        }
     }
-}
 
     stopPepe() {
         clearInterval(this.character.characterInterval1);
         clearInterval(this.character.characterInterval2);
         clearInterval(this.character.gravityInterval);
+        this.character.stopSnoringSound();
     }
     stopClouds() {
         this.level.clouds.forEach((cloud) => {
@@ -99,45 +104,55 @@ class World {
         });
     }
     stopThrowableObjects() {
-    this.throwableObjects.forEach((bottle) => {
-        clearInterval(bottle.animationIntervalBottle1);
-        clearInterval(bottle.animationIntervalBottle2);
-        clearInterval(bottle.gravityInterval);
-    });
-}
+        this.throwableObjects.forEach((bottle) => {
+            clearInterval(bottle.animationIntervalBottle1);
+            clearInterval(bottle.animationIntervalBottle2);
+            clearInterval(bottle.gravityInterval);
+        });
+    }
     checkEndOfGame() {
-    this.endGameInterval = setInterval(() => {
-        if (this.gameover == true && this.endOfgame == false) {
-            this.stopThrowableObjects();
-            this.stopAllEnemies();
-            this.stopEndBoss();
-            this.stopCollectableObjects();
-            this.stopClouds();
-            this.endOfgame = true;
-            this.deactivateKeyboard();
-            this.stopPepeTimeout = setTimeout(() => {
+        this.endGameInterval = setInterval(() => {
+            if (this.gameover == true && this.endOfgame == false) {
+                this.stopThrowableObjects();
+                this.stopAllEnemies();
+                this.stopEndBoss();
+                this.stopCollectableObjects();
+                this.stopClouds();
+                clearInterval(this.worldInterval1);  
+                clearInterval(this.worldInterval2);
+                this.endOfgame = true;
+                this.deactivateKeyboard();
                 this.stopPepe();
-            }, 3000);
-            this.showEndButtons();
-            this.activateEndButtons();
-            clearInterval(this.endGameInterval);
-        }
-        if (this.youwin == true && this.endOfgame == false) {
-            this.stopThrowableObjects();
-            this.stopCollectableObjects();
-            this.stopEndBoss();
-            this.stopPepe();
-            this.stopAllEnemies();
-            this.stopClouds();
-            this.endOfgame = true;
-            this.deactivateKeyboard();
-            this.showEndButtons();
-            this.activateEndButtons();
-            clearInterval(this.endGameInterval);
-        }
+                this.showEndButtons();
+                this.activateEndButtons();
+                clearInterval(this.endGameInterval);
+                AudioHub.stopAll();
+                AudioHub.playOne(AudioHub.PEPE_DEAD);
+                AudioHub.playOne(AudioHub.GAMEOVER);
+                return;
+            }
+            if (this.youwin == true && this.endOfgame == false) {
+                this.stopThrowableObjects();
+                this.stopCollectableObjects();
+                this.stopEndBoss();
+                this.stopPepe();
+                this.stopAllEnemies();
+                this.stopClouds();
+                clearInterval(this.worldInterval1);  
+                clearInterval(this.worldInterval2);
+                this.endOfgame = true;
+                this.deactivateKeyboard();
+                this.showEndButtons();
+                this.activateEndButtons();
+                clearInterval(this.endGameInterval);
+                AudioHub.stopAll();
+                AudioHub.playOne(AudioHub.ENDBOSS_DEAD);
+                AudioHub.playOne(AudioHub.YOU_WIN);
+                return;
+            }
 
-    }, 1000);
-}
+        }, 1000);
+    }
 
     deactivateKeyboard() {
         document.removeEventListener('keydown', handleKeyDown);
@@ -158,14 +173,17 @@ class World {
 
     activateEndButtons() {
         document.getElementById('zur_startseite_btn').onclick = () => {
+            AudioHub.stopAll();
             this.destroy();
             init();
             document.getElementById('neu_starten_btn').style.display = 'none';
             document.getElementById('zur_startseite_btn').style.display = 'none';
             keyboard = new Keyboard();
             world.activateKeyboard();
+            hideVolumeBtns();
         };
         document.getElementById('neu_starten_btn').onclick = () => {
+            AudioHub.stopAll();
             document.getElementById('neu_starten_btn').style.display = 'none';
             document.getElementById('zur_startseite_btn').style.display = 'none';
             this.destroy();
@@ -189,8 +207,12 @@ class World {
             this.checkBottleImpactOnChicken();
             this.collectCoins(this.level.coins);
             this.collectBottles(this.level.bottles);
-            this.checkThrowObjects();
         }, 100);
+    }
+    runSlowlier() {
+        this.worldInterval2 = setInterval(() => {
+            this.checkThrowObjects();
+        }, 200);
     }
 
     checkCoins() {
@@ -204,6 +226,7 @@ class World {
     checkThrowObjects() {
         if (this.keyboard.D && this.character.bottles > 0) {
             let throwableObject = new ThrowableObject(this.character.x + 100, this.character.y + 100);
+            AudioHub.playOne(AudioHub.BOTTLE_THROW);
             this.throwableObjects.push(throwableObject);
             this.character.bottles -= 10;
             this.character.idleStautsStart = new Date().getTime();
@@ -216,6 +239,7 @@ class World {
                 !(enemy instanceof Endboss)
             ) {
                 this.character.speedY = 20;
+                AudioHub.playOne(AudioHub.DEADENEMY);
                 enemy.hit();
                 setTimeout(() => {
                     this.removeObjectFromArray(enemy.x, this.level.enemies)
@@ -231,7 +255,12 @@ class World {
             if (this.character.isColliding(enemy)) {
                 this.character.hit();
                 this.statusBarLife.setPercentage(this.character.energy);
+                if (Date.now() - this.lastHurtSound > 500) {
+                AudioHub.playOne(AudioHub.PEPE_HURT);
+                this.lastHurtSound = Date.now();
             }
+            }
+            
         });
     }
 
@@ -241,11 +270,14 @@ class World {
                 if (enemy.isColliding(bottle)) {
                     if (enemy instanceof Endboss) {
                         this.removeObjectFromArray(bottle.x, this.throwableObjects);
+                        AudioHub.playOne(AudioHub.ENDBOSS_HURT);
                         enemy.hit();
                         this.statusBarEndBoss.setPercentage(enemy.energy * 4);
                     }
                     else {
                         bottle.playAnimation(bottle.IMAGES_SPLASH);
+                        AudioHub.playOne(AudioHub.BOTTLE_HIT);
+                        AudioHub.playOne(AudioHub.DEADENEMY);
                         enemy.hit();
                         setTimeout(() => {
                             this.removeObjectFromArray(bottle.x, this.throwableObjects);
@@ -262,6 +294,7 @@ class World {
     collectCoins(coinsList) {
         coinsList.forEach((coin) => {
             if (this.character.isColliding(coin)) {
+                AudioHub.playOne(AudioHub.COIN);
                 this.character.coins += 10;
                 this.removeObjectFromArray(coin.x, this.level.coins);
             }
@@ -272,6 +305,7 @@ class World {
     collectBottles(bottlesList) {
         bottlesList.forEach((bottle) => {
             if (this.character.isColliding(bottle)) {
+                AudioHub.playOne(AudioHub.BOTTLE);
                 this.character.bottles += 10;
                 this.removeObjectFromArray(bottle.x, this.level.bottles);
             }
