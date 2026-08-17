@@ -23,12 +23,12 @@ class Character extends MovableObject {
         'img/2_character_pepe/1_idle/long_idle/I-19.png',
         'img/2_character_pepe/1_idle/long_idle/I-20.png',
     ];
-    IMAGES_WALKING = ['/img/2_character_pepe/2_walk/W-21.png',
-        '/img/2_character_pepe/2_walk/W-22.png',
-        '/img/2_character_pepe/2_walk/W-23.png',
-        '/img/2_character_pepe/2_walk/W-24.png',
-        '/img/2_character_pepe/2_walk/W-25.png',
-        '/img/2_character_pepe/2_walk/W-26.png'
+    IMAGES_WALKING = ['img/2_character_pepe/2_walk/W-21.png',
+        'img/2_character_pepe/2_walk/W-22.png',
+        'img/2_character_pepe/2_walk/W-23.png',
+        'img/2_character_pepe/2_walk/W-24.png',
+        'img/2_character_pepe/2_walk/W-25.png',
+        'img/2_character_pepe/2_walk/W-26.png'
     ];
     IMAGES_JUMPING = [
         'img/2_character_pepe/3_jump/J-31.png',
@@ -65,7 +65,7 @@ class Character extends MovableObject {
     snoreInterval;
 
     constructor() {
-        super().loadImage('/img/2_character_pepe/2_walk/W-21.png');
+        super().loadImage('img/2_character_pepe/2_walk/W-21.png');
         this.loadImages(this.IMAGES_IDLE);
         this.loadImages(this.IMAGES_LONGIDLE);
         this.loadImages(this.IMAGES_WALKING);

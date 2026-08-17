@@ -232,10 +232,6 @@ dialog {
     bottom: 0;
     margin: auto;
 
-    /* background-image: url('./img/5_background/bg_dialog.png');
-    background-position: top;
-    background-size: cover; */
-
     background-color: #F4D5A1;
 
     border: solid 5px #C0272B;
@@ -243,8 +239,6 @@ dialog {
 
     color: #03381d;
     font-size: large;
-    /* font-family: 'Luckiest Guy'; */
-    /* letter-spacing: 0.5px; */
 
     font-family: 'Comic Sans MS';
 
