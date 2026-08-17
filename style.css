@@ -3,6 +3,8 @@
     box-sizing: border-box;
 }
 
+/* FONTS */
+
 /* luckiest-guy-regular - latin */
 @font-face {
     font-display: swap;
@@ -14,8 +16,14 @@
     /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
+/* BASE LAYOUT */
+
+html{
+    min-height: 100%;
+}
+
 body {
-    height: 100vh;
+   min-height: 100%;
 
     display: flex;
     flex-direction: column;
@@ -41,7 +49,15 @@ h1 {
     margin-top: 20px;
 }
 
-canvas {
+/* CANVAS / GAME SCREEN */
+
+.canvas-wrapper{
+    width: 720px;
+    height: 480px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     outline: #FFE21A 5px solid;
 
@@ -52,6 +68,11 @@ canvas {
     bottom: 0;
     margin: auto;
 
+    border-radius: 10px;
+}
+
+canvas{
+    outline: #FFE21A 5px solid;
     border-radius: 10px;
 }
 
@@ -69,6 +90,71 @@ canvas {
 
     border-radius: 10px;
 }
+
+/* FULLSCREEN */
+.full-screen-btn {
+    background: none;
+    border: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    display: none;
+}
+
+.full-screen-btn img{
+    height: 25px;
+    width: 25px;
+
+    cursor: pointer;
+}
+
+/* VOLUME BUTTONS */ /* PLAY-PAUSE BUTTON */
+
+.volume-off,
+.volume-on,
+.play-pause-btn {
+    display: none;
+}
+
+.volume-off svg,
+.volume-on svg{
+    height: 25px;
+    width: 25px;
+}
+
+.play-pause-btn img {
+    height: 40px;
+    width: 40px;
+}
+
+#volume-on,
+#volume-off,
+.play-pause-btn {
+    background-color: transparent;
+    border: none;
+
+    cursor: pointer;
+
+    width: fit-content;
+    height: fit-content;
+}
+.volume-play-pause-btns-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* bottom: 400px; */
+    margin: auto;
+    z-index: 9999;
+    cursor: pointer;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 10px; 
+}
+
+/* GAME BUTTONS */
 
 .btns_container {
 
@@ -100,18 +186,6 @@ canvas {
     text-align: center;
 }
 
-span{
-    background-color: #c03136;
-
-    padding: 5px;
-
-    border-radius: 20px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 button img {
     height: 80px;
     width: auto;
@@ -124,9 +198,23 @@ button img {
     display: none;
 }
 
+span{
+    background-color: #c03136;
+
+    padding: 5px;
+
+    border-radius: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* DIALOG */
+
 dialog {
     width: 420px;
-    height: 480px;
+    height: 380px;
 
     position: absolute;
     top: 0px;
@@ -135,19 +223,21 @@ dialog {
     bottom: 0;
     margin: auto;
 
-    background-image: url('./img/5_background/bg_dialog.png');
+    /* background-image: url('./img/5_background/bg_dialog.png');
     background-position: top;
-    background-size: cover;
-    /* background-color: #D08A5A;
-    background-position: center; */
+    background-size: cover; */
+
+    background-color: #F4D5A1;
 
     border: solid 5px #C0272B;
     border-radius: 10px;
 
     color: #03381d;
     font-size: large;
-    font-family: 'Luckiest Guy';
-    letter-spacing: 0.5px;
+    /* font-family: 'Luckiest Guy'; */
+    /* letter-spacing: 0.5px; */
+
+    font-family: 'Comic Sans MS', cursive;
 
     padding: 0px;
 }
@@ -178,36 +268,49 @@ dialog {
     padding: 10px;
 }
 
-.volume-off,
-.volume-on {
-    display: none;
-}
+/* IMPRESSUM LINK (on game page) */
 
-.volume-off svg,
-.volume-on svg {
-    height: 25px;
-    width: 25px;
-}
-
-#volume-on,
-#volume-off {
-    background-color: transparent;
-    border: none;
-
-    cursor: pointer;
-
-    width: fit-content;
-    height: fit-content;
-}
-
-.volume-on,
-.volume-off {
+.impressum_btn{
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 400px;
-    margin: auto;
-    z-index: 9999;
+
+    bottom: 20px;
+
     cursor: pointer;
+
+    text-decoration: none;
+
+    font-family: 'Luckiest Guy';
+    letter-spacing: 0.5px;
+    color: #FFE21A;
+
+    background-color: #c03136;
+
+    padding: 5px;
+
+    border-radius: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* IMPRESSUM PAGE */
+
+.impressum{
+    background-image: none;
+    background-color: #F4D5A1;
+}
+
+address{
+    font-style: normal;
+}
+
+section, footer{
+    font-family: 'Comic Sans MS', cursive;
+
+    padding-left: 50px;
+    margin-bottom: 15px;
+}
+.haftung-p1{
+    margin-bottom: 15px;
 }

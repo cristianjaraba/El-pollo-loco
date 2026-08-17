@@ -11,6 +11,7 @@ class AudioHub {
     static PEPE_JUMPING = new Audio('audio/pepe-jumping.mp3');
     static ENDBOSS_HURT = new Audio('audio/endboss_hurt.mp3');
     static ENDBOSS_DEAD = new Audio('audio/endboss_dead.mp3');
+    static ENDBOSS_ATTACK = new Audio('audio/endboss_attack.mp3');
     static YOU_WIN = new Audio('audio/youwin.mp3');
     static GAMEOVER = new Audio('audio/gameover.mp3');
     static CHICKEN_BG = new Audio('audio/chicken-bg.mp3');
@@ -31,6 +32,7 @@ class AudioHub {
         this.PEPE_JUMPING,
         this.ENDBOSS_HURT,
         this.ENDBOSS_DEAD,
+        this.ENDBOSS_ATTACK,
         this.YOU_WIN,
         this.GAMEOVER,
         this.CHICKEN_BG,

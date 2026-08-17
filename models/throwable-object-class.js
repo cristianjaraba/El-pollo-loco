@@ -35,7 +35,6 @@ class ThrowableObject extends MovableObject {
             if (this.y > 350) {
                 AudioHub.playOne(AudioHub.BOTTLE_HIT);
                 this.playAnimation(this.IMAGES_SPLASH);
-
                 clearInterval(this.animationIntervalBottle2);
             } else {
                 this.playAnimation(this.IMAGES_ROTATING);

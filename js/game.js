@@ -7,6 +7,8 @@ function startGame() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
     showVolumeBtns();
+    showPlayPauseBtn();
+    document.getElementById('full-screen-btn').style.display = 'flex';
 }
 
 function init() {
@@ -55,9 +57,13 @@ function showVolumeBtns() {
     }
 }
 
+function showPlayPauseBtn() {
+    document.getElementById('play-pause-btn').style.display = 'flex';
+}
+
 function hideVolumeBtns() {
     document.getElementById('volume-off').style.display = 'none';
-        document.getElementById('volume-on').style.display = 'none';
+    document.getElementById('volume-on').style.display = 'none';
 }
 
 function handleKeyDown(event) {
@@ -137,4 +143,8 @@ document.getElementById('volume-off').onclick = ()=>{
     AudioHub.unmute();
     sound = true;
     localStorage.setItem('sound', 'true');
+}
+
+document.getElementById('full-screen-btn').onclick = ()=>{
+    canvas.requestFullscreen();
 }

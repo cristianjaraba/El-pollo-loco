@@ -20,7 +20,6 @@ class CollectableObject extends DrawableObject{
         this.collectablesInterval = setInterval(()=>{
             if (index == 0) {
                 index = 1;
-                
             } else {
                 index = 0
             }

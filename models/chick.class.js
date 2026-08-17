@@ -6,10 +6,8 @@ class Chick extends Chicken {
 
     constructor(IMAGES_WALKING, IMAGE_DEAD) {
         super(IMAGES_WALKING, IMAGE_DEAD);
-
         this.IMAGES_WALKING = IMAGES_WALKING;
         this.IMAGE_DEAD = IMAGE_DEAD;
-
         this.y = 370;
 
     }
