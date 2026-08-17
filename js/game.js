@@ -1,4 +1,15 @@
 const dialog = document.getElementById('dialog');
+const rotateIcon = document.getElementById('mobile_rotate_icon');
+const title = document.querySelector('h1');
+const canvasWrapper = document.querySelector('.canvas-wrapper');
+const impressumBtn = document.querySelector('.impressum_btn');
+const portraitQuery = window.matchMedia('(hover: none) and (orientation: portrait)');
+const landscapeQuery = window.matchMedia('(hover: none) and (orientation: landscape)');
+const arrowsContainerRef = document.getElementById('arrows-container');
+const btnUpRef = document.getElementById('up_btn');
+const btnLeftRef = document.getElementById('left_btn');
+const btnRightRef = document.getElementById('right_btn');
+const THROWABLERightRef = document.getElementById('throw_btn');
 let world;
 let keyboard = new Keyboard();
 let sound = getSoundFromLocalStorage();
@@ -9,9 +20,11 @@ function startGame() {
     showVolumeBtns();
     showPlayPauseBtn();
     document.getElementById('full-screen-btn').style.display = 'flex';
+    handleOrientationChange();
 }
 
 function init() {
+    handleOrientationChange();
     document.getElementById('start_img').style.display = 'flex';
     document.getElementById('start_btn').style.display = 'flex';
     document.getElementById('anleitung_btn').style.display = 'flex';
@@ -152,9 +165,78 @@ document.getElementById('full-screen-btn').onclick = () => {
 document.getElementById('play-pause-btn').onclick = () => {
     if (world.isPaused) {
         world.unpauseAllMovableObjects();
+        world.activateKeyboard();
         world.isPaused = false;
     } else {
         world.stopAllMovableObjects();
+        world.deactivateKeyboard();
         world.isPaused = true;
     }
 }
+function showPortraitLayout(rotateIcon, title, canvasWrapper, impressumBtn) {
+    rotateIcon.style.cssText = `
+        display: flex;
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        height: 100px;
+        width: auto;
+    `;
+    title.style.display = 'none';
+    canvasWrapper.style.display = 'none';
+    impressumBtn.style.display = 'none';
+    document.body.style.backgroundImage = 'none';
+}
+
+function showLandscapeLayout(rotateIcon, title, canvasWrapper, impressumBtn) {
+    rotateIcon.style.display = 'none';
+    title.style.display = 'flex';
+    canvasWrapper.style.display = 'flex';
+    impressumBtn.style.display = 'flex';
+    document.body.style.backgroundImage = `url('img/5_background/bg_img.png')`;
+}
+
+function handleOrientationChange() {
+    if (portraitQuery.matches) {
+        arrowsContainerRef.style.display = 'none';
+        showPortraitLayout(rotateIcon, title, canvasWrapper, impressumBtn);
+        if (world && !world.isPaused) {
+            world.stopAllMovableObjects();
+            world.deactivateKeyboard();
+            world.isPaused = true;
+        }
+
+    } else if (landscapeQuery.matches) {
+        arrowsContainerRef.style.display = (world && !world.endOfgame) ? 'flex' : 'none';
+        showLandscapeLayout(rotateIcon, title, canvasWrapper, impressumBtn);
+        if (world && world.isPaused) {
+            world.unpauseAllMovableObjects();
+            world.activateKeyboard();
+            world.isPaused = false;
+        }
+
+    } else {
+        arrowsContainerRef.style.display = 'none';
+        showLandscapeLayout(rotateIcon, title, canvasWrapper, impressumBtn);
+    }
+}
+
+portraitQuery.addEventListener('change', handleOrientationChange);
+landscapeQuery.addEventListener('change', handleOrientationChange);
+
+function addTouchControl(element, keyProp) {
+    element.addEventListener('touchstart', function() {
+        keyboard[keyProp] = true;
+    });
+    element.addEventListener('touchend', function() {
+        keyboard[keyProp] = false;
+    });
+    element.addEventListener('touchcancel', function() {
+        keyboard[keyProp] = false;
+    });
+}
+
+addTouchControl(btnLeftRef, 'LEFT');
+addTouchControl(btnRightRef, 'RIGHT');
+addTouchControl(btnUpRef, 'SPACE');
+addTouchControl(THROWABLERightRef, 'D');

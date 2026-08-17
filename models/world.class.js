@@ -209,7 +209,7 @@ class World {
         array.splice(removeIndex, 1);
     }
 
-    // ---------- STOP / CLEANUP ----------
+    // ---------- PLAY~PAUSE / STOP / CLEANUP ----------
 
     destroy() {
         clearInterval(this.worldInterval1);
@@ -359,6 +359,7 @@ class World {
         document.getElementById('zur_startseite_btn').style.display = 'none';
         document.getElementById('full-screen-btn').style.display = 'none';
         document.getElementById('play-pause-btn').style.display = 'none';
+        
         keyboard = new Keyboard();
         world.activateKeyboard();
         hideVolumeBtns();
