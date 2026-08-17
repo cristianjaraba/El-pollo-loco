@@ -4,10 +4,9 @@ A 2D browser-based platform game built with JavaScript, HTML, and CSS. Control P
 
 ## Screenshots
 
-<!-- Add your screenshots here -->
-![Start screen](./screenshots/start.png)
-![Gameplay](./screenshots/gameplay.png)
-![Boss fight](./screenshots/boss.png)
+<img src="./screenshots/start.png" alt="Start screen" width="400">
+<img src="./screenshots/gameplay.png" alt="Gameplay" width="400">
+<img src="./screenshots/boss.png" alt="Boss fight" width="400">
 
 ## Controls
 
