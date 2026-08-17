@@ -264,6 +264,15 @@ class World {
         this.stopPepe();
         this.stopClouds();
     }
+    unpauseAllMovableObjects(){
+        this.throwableObjects.forEach((bottle) => {bottle.setImg();});
+        this.level.enemies.forEach((enemy)=>{enemy.animate();});
+        this.level.bottles.forEach((bottle) => {bottle.setImg();});
+        this.level.coins.forEach((coin) => {coin.setImg();});
+        this.character.animate();
+        this.character.applyGravity();
+        this.level.clouds.forEach((cloud) => {cloud.animate();});
+    }
     clearWorldIntervals() {
         clearInterval(this.worldInterval1);
         clearInterval(this.worldInterval2);
@@ -349,6 +358,7 @@ class World {
         document.getElementById('neu_starten_btn').style.display = 'none';
         document.getElementById('zur_startseite_btn').style.display = 'none';
         document.getElementById('full-screen-btn').style.display = 'none';
+        document.getElementById('play-pause-btn').style.display = 'none';
         keyboard = new Keyboard();
         world.activateKeyboard();
         hideVolumeBtns();

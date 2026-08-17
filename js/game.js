@@ -27,7 +27,7 @@ function init() {
     };
 }
 
-    function getSoundFromLocalStorage(){
+function getSoundFromLocalStorage() {
 
     let data = localStorage.getItem('sound');
 
@@ -35,12 +35,12 @@ function init() {
         if (data == 'true') {
             AudioHub.isMuted = false;
             return true;
-        } 
+        }
         else {
             AudioHub.isMuted = true;
             return false;
         }
-    } 
+    }
     else {
         AudioHub.isMuted = false;
         return true;
@@ -121,15 +121,15 @@ document.addEventListener('keyup', handleKeyUp);
 
 
 
-document.getElementById('anleitung_btn').onclick = ()=>{
+document.getElementById('anleitung_btn').onclick = () => {
     dialog.showModal();
 }
 
-document.getElementById('close-dialog').onclick = ()=>{
+document.getElementById('close-dialog').onclick = () => {
     dialog.close();
 }
 
-document.getElementById('volume-on').onclick = ()=>{
+document.getElementById('volume-on').onclick = () => {
     document.getElementById('volume-on').style.display = 'none';
     document.getElementById('volume-off').style.display = 'flex';
     AudioHub.mute();
@@ -137,7 +137,7 @@ document.getElementById('volume-on').onclick = ()=>{
     localStorage.setItem('sound', 'false');
 }
 
-document.getElementById('volume-off').onclick = ()=>{
+document.getElementById('volume-off').onclick = () => {
     document.getElementById('volume-off').style.display = 'none';
     document.getElementById('volume-on').style.display = 'flex';
     AudioHub.unmute();
@@ -145,6 +145,16 @@ document.getElementById('volume-off').onclick = ()=>{
     localStorage.setItem('sound', 'true');
 }
 
-document.getElementById('full-screen-btn').onclick = ()=>{
+document.getElementById('full-screen-btn').onclick = () => {
     canvas.requestFullscreen();
+}
+
+document.getElementById('play-pause-btn').onclick = () => {
+    if (world.isPaused) {
+        world.unpauseAllMovableObjects();
+        world.isPaused = false;
+    } else {
+        world.stopAllMovableObjects();
+        world.isPaused = true;
+    }
 }
