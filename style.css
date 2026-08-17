@@ -246,7 +246,7 @@ dialog {
     /* font-family: 'Luckiest Guy'; */
     /* letter-spacing: 0.5px; */
 
-    font-family: 'Comic Sans MS', cursive;
+    font-family: 'Comic Sans MS';
 
     padding: 0px;
 }
@@ -317,7 +317,7 @@ address {
 
 section,
 footer {
-    font-family: 'Comic Sans MS', cursive;
+    font-family: 'Comic Sans MS';
 
     padding-left: clamp(15px, 5vw, 50px);
     padding-right: 15px;
