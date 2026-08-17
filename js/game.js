@@ -1,18 +1,28 @@
+// ---------- DOM REFERENCES ----------
+
 const dialog = document.getElementById('dialog');
 const rotateIcon = document.getElementById('mobile_rotate_icon');
 const title = document.querySelector('h1');
 const canvasWrapper = document.querySelector('.canvas-wrapper');
 const impressumBtn = document.querySelector('.impressum_btn');
-const portraitQuery = window.matchMedia('(hover: none) and (orientation: portrait)');
-const landscapeQuery = window.matchMedia('(hover: none) and (orientation: landscape)');
 const arrowsContainerRef = document.getElementById('arrows-container');
 const btnUpRef = document.getElementById('up_btn');
 const btnLeftRef = document.getElementById('left_btn');
 const btnRightRef = document.getElementById('right_btn');
 const THROWABLERightRef = document.getElementById('throw_btn');
+
+// ---------- MEDIA QUERIES ----------
+
+const portraitQuery = window.matchMedia('(hover: none) and (orientation: portrait)');
+const landscapeQuery = window.matchMedia('(hover: none) and (orientation: landscape)');
+
+// ---------- GLOBAL STATE ----------
+
 let world;
 let keyboard = new Keyboard();
 let sound = getSoundFromLocalStorage();
+
+// ---------- GAME START / INIT ----------
 
 function startGame() {
     canvas = document.getElementById('canvas');
@@ -39,6 +49,8 @@ function init() {
         AudioHub.playLoop(AudioHub.BG_MUSIC, 21000);
     };
 }
+
+// ---------- SOUND / VOLUME ----------
 
 function getSoundFromLocalStorage() {
 
@@ -70,14 +82,16 @@ function showVolumeBtns() {
     }
 }
 
-function showPlayPauseBtn() {
-    document.getElementById('play-pause-btn').style.display = 'flex';
-}
-
 function hideVolumeBtns() {
     document.getElementById('volume-off').style.display = 'none';
     document.getElementById('volume-on').style.display = 'none';
 }
+
+function showPlayPauseBtn() {
+    document.getElementById('play-pause-btn').style.display = 'flex';
+}
+
+// ---------- KEYBOARD ----------
 
 function handleKeyDown(event) {
     switch (event.keyCode) {
@@ -132,47 +146,27 @@ function handleKeyUp(event) {
 document.addEventListener('keydown', handleKeyDown);
 document.addEventListener('keyup', handleKeyUp);
 
+// ---------- TOUCH / MOBILE CONTROLS ----------
 
-
-document.getElementById('anleitung_btn').onclick = () => {
-    dialog.showModal();
+function addTouchControl(element, keyProp) {
+    element.addEventListener('touchstart', function() {
+        keyboard[keyProp] = true;
+    });
+    element.addEventListener('touchend', function() {
+        keyboard[keyProp] = false;
+    });
+    element.addEventListener('touchcancel', function() {
+        keyboard[keyProp] = false;
+    });
 }
 
-document.getElementById('close-dialog').onclick = () => {
-    dialog.close();
-}
+addTouchControl(btnLeftRef, 'LEFT');
+addTouchControl(btnRightRef, 'RIGHT');
+addTouchControl(btnUpRef, 'SPACE');
+addTouchControl(THROWABLERightRef, 'D');
 
-document.getElementById('volume-on').onclick = () => {
-    document.getElementById('volume-on').style.display = 'none';
-    document.getElementById('volume-off').style.display = 'flex';
-    AudioHub.mute();
-    sound = false;
-    localStorage.setItem('sound', 'false');
-}
+// ---------- ORIENTATION / RESPONSIVE LAYOUT ----------
 
-document.getElementById('volume-off').onclick = () => {
-    document.getElementById('volume-off').style.display = 'none';
-    document.getElementById('volume-on').style.display = 'flex';
-    AudioHub.unmute();
-    sound = true;
-    localStorage.setItem('sound', 'true');
-}
-
-document.getElementById('full-screen-btn').onclick = () => {
-    canvas.requestFullscreen();
-}
-
-document.getElementById('play-pause-btn').onclick = () => {
-    if (world.isPaused) {
-        world.unpauseAllMovableObjects();
-        world.activateKeyboard();
-        world.isPaused = false;
-    } else {
-        world.stopAllMovableObjects();
-        world.deactivateKeyboard();
-        world.isPaused = true;
-    }
-}
 function showPortraitLayout(rotateIcon, title, canvasWrapper, impressumBtn) {
     rotateIcon.style.cssText = `
         display: flex;
@@ -224,19 +218,44 @@ function handleOrientationChange() {
 portraitQuery.addEventListener('change', handleOrientationChange);
 landscapeQuery.addEventListener('change', handleOrientationChange);
 
-function addTouchControl(element, keyProp) {
-    element.addEventListener('touchstart', function() {
-        keyboard[keyProp] = true;
-    });
-    element.addEventListener('touchend', function() {
-        keyboard[keyProp] = false;
-    });
-    element.addEventListener('touchcancel', function() {
-        keyboard[keyProp] = false;
-    });
+// ---------- UI BUTTON HANDLERS ----------
+
+document.getElementById('anleitung_btn').onclick = () => {
+    dialog.showModal();
 }
 
-addTouchControl(btnLeftRef, 'LEFT');
-addTouchControl(btnRightRef, 'RIGHT');
-addTouchControl(btnUpRef, 'SPACE');
-addTouchControl(THROWABLERightRef, 'D');
+document.getElementById('close-dialog').onclick = () => {
+    dialog.close();
+}
+
+document.getElementById('volume-on').onclick = () => {
+    document.getElementById('volume-on').style.display = 'none';
+    document.getElementById('volume-off').style.display = 'flex';
+    AudioHub.mute();
+    sound = false;
+    localStorage.setItem('sound', 'false');
+}
+
+document.getElementById('volume-off').onclick = () => {
+    document.getElementById('volume-off').style.display = 'none';
+    document.getElementById('volume-on').style.display = 'flex';
+    AudioHub.unmute();
+    sound = true;
+    localStorage.setItem('sound', 'true');
+}
+
+document.getElementById('full-screen-btn').onclick = () => {
+    canvas.requestFullscreen();
+}
+
+document.getElementById('play-pause-btn').onclick = () => {
+    if (world.isPaused) {
+        world.unpauseAllMovableObjects();
+        world.activateKeyboard();
+        world.isPaused = false;
+    } else {
+        world.stopAllMovableObjects();
+        world.deactivateKeyboard();
+        world.isPaused = true;
+    }
+}
