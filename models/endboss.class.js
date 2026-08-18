@@ -61,7 +61,7 @@ class Endboss extends MovableObject {
     animate() {
         this.endBossInterval1 = setInterval(() => {
             this.moveLeft();
-        }, 1000 / 60);
+        }, 1000 / 200);
         this.endBossInterval2 = setInterval(() => {
             this.checkEndbossStatus();
         }, 200);
@@ -93,7 +93,7 @@ class Endboss extends MovableObject {
     // ---------- ATTACK ----------
 
     setAttackStatus() {
-        this.x += -10;
+        this.x += -20;
         this.playAnimation(this.IMAGES_ATTACK);
         this.playAttackSound();
     }
