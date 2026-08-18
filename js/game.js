@@ -6,6 +6,7 @@ const title = document.querySelector('h1');
 const canvasWrapper = document.querySelector('.canvas-wrapper');
 const impressumBtn = document.querySelector('.impressum_btn');
 const arrowsContainerRef = document.getElementById('arrows-container');
+const throwContainerRef = document.getElementById('throw-container');
 const btnUpRef = document.getElementById('up_btn');
 const btnLeftRef = document.getElementById('left_btn');
 const btnRightRef = document.getElementById('right_btn');
@@ -193,6 +194,7 @@ function showLandscapeLayout(rotateIcon, title, canvasWrapper, impressumBtn) {
 function handleOrientationChange() {
     if (portraitQuery.matches) {
         arrowsContainerRef.style.display = 'none';
+        throwContainerRef.style.display = 'none';
         showPortraitLayout(rotateIcon, title, canvasWrapper, impressumBtn);
         if (world && !world.isPaused) {
             world.stopAllMovableObjects();
@@ -202,6 +204,7 @@ function handleOrientationChange() {
 
     } else if (landscapeQuery.matches) {
         arrowsContainerRef.style.display = (world && !world.endOfgame) ? 'flex' : 'none';
+        throwContainerRef.style.display = (world && !world.endOfgame) ? 'flex' : 'none';
         showLandscapeLayout(rotateIcon, title, canvasWrapper, impressumBtn);
         if (world && world.isPaused) {
             world.unpauseAllMovableObjects();
@@ -211,6 +214,7 @@ function handleOrientationChange() {
 
     } else {
         arrowsContainerRef.style.display = 'none';
+        throwContainerRef.style.display = 'none';
         showLandscapeLayout(rotateIcon, title, canvasWrapper, impressumBtn);
     }
 }
