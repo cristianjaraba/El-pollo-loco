@@ -15,7 +15,7 @@ class Level{
     /** @type {CollectableObject[]} The level's collectable bottles. */
     bottles;
     /** @type {number} The x-coordinate marking the end of the level. */
-    level_end_x = 2200;
+    level_end_x = 5000;
 
     /**
      * Creates a level from its constituent object lists.

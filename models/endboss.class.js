@@ -61,6 +61,7 @@ class Endboss extends MovableObject {
     endBossInterval2;
     /** @type {number} Timestamp (ms) of the last attack sound played, used to throttle repeated playback. */
     lastHurtSound = 0;
+    speed = 2;
 
     /**
      * Creates the endboss at a fixed starting x-position at the end of
@@ -69,7 +70,7 @@ class Endboss extends MovableObject {
      */
     constructor() {
         super().loadImage(this.IMAGES_WALKING[0]);
-        this.x = 2500;
+        this.x = 5000;
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_HURT);
@@ -89,8 +90,14 @@ class Endboss extends MovableObject {
      */
     animate() {
         this.endBossInterval1 = setInterval(() => {
-            this.moveLeft();
-        }, 1000 / 200);
+            if (world.character.x > 4000) {
+                if (world.character.x > this.x) {
+                    this.moveRight();
+                } else {
+                    this.moveLeft();
+                }
+            }
+        }, 1000 / 60);
         this.endBossInterval2 = setInterval(() => {
             this.checkEndbossStatus();
         }, 200);
@@ -141,7 +148,7 @@ class Endboss extends MovableObject {
      * @returns {void}
      */
     setAttackStatus() {
-        this.x += -20;
+        this.x += -30;
         this.playAnimation(this.IMAGES_ATTACK);
         this.playAttackSound();
     }
