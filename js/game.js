@@ -263,3 +263,13 @@ document.getElementById('play-pause-btn').onclick = () => {
         world.isPaused = true;
     }
 }
+
+// ---------- Canceling the contextmenu event ----------
+
+arrowsContainerRef.addEventListener('contextmenu', (e)=>{
+    e.preventDefault();
+});
+
+throwContainerRef.addEventListener('contextmenu', (e)=>{
+    e.preventDefault();
+});
