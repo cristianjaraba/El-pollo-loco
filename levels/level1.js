@@ -1,3 +1,9 @@
+/**
+ * Generates the full list of enemies for a level: 8 normal chickens,
+ * 8 small chicks, and a single endboss, in that order (endboss last).
+ *
+ * @returns {(Chicken|Chick|Endboss)[]} The generated list of enemy objects.
+ */
 function generateEnemiesList() {
     let chickens = [];
     let chicks = [];
@@ -21,6 +27,13 @@ function generateEnemiesList() {
     return [...chickens, ...chicks, new Endboss()];
 }
 
+/**
+ * Generates the parallax background for the level, made up of four
+ * layers (air, third, second, first) repeated across four consecutive
+ * 719px-wide segments so the background can scroll seamlessly.
+ *
+ * @returns {BackgroundObject[]} The generated list of background layer objects.
+ */
 function generateBackgroundObjectsList(){
     return [
         new BackgroundObject('img/5_background/layers/air.png', -719, 720, 480),
@@ -48,6 +61,12 @@ function generateBackgroundObjectsList(){
     ];
 }
 
+/**
+ * Generates 10 collectable coins at random positions within the level,
+ * with x in [200, 2000] and y in [150, 350].
+ *
+ * @returns {CollectableObject[]} The generated list of coin objects.
+ */
 function generateCoinsList() {
     let coinsList = [];
     for (let index = 0; index < 10; index++) {
@@ -60,6 +79,12 @@ function generateCoinsList() {
     return coinsList;
 }
 
+/**
+ * Generates 10 collectable salsa bottles at random positions within
+ * the level, with x in [200, 2000] and y in [330, 350].
+ *
+ * @returns {CollectableObject[]} The generated list of bottle objects.
+ */
 function generateBottlesList() {
     let bottlesList = [];
     for (let index = 0; index < 10; index++) {
@@ -71,4 +96,3 @@ function generateBottlesList() {
     }
     return bottlesList;
 }
-

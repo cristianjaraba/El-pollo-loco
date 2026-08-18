@@ -1,6 +1,16 @@
+/**
+ * Represents the playable character (Pepe). Handles keyboard-driven
+ * movement, jumping, and gravity, and derives its current animation
+ * (idle, long-idle, walking, jumping, hurt, dead) from its state each
+ * animation tick. Also tracks collected coins and bottles.
+ *
+ * @extends MovableObject
+ */
 class Character extends MovableObject {
     y = 80;
     height = 250;
+
+    /** @type {string[]} Frames for the short idle animation. */
     IMAGES_IDLE = ['img/2_character_pepe/1_idle/idle/I-1.png',
         'img/2_character_pepe/1_idle/idle/I-2.png',
         'img/2_character_pepe/1_idle/idle/I-3.png',
@@ -12,6 +22,7 @@ class Character extends MovableObject {
         'img/2_character_pepe/1_idle/idle/I-9.png',
         'img/2_character_pepe/1_idle/idle/I-10.png',
     ];
+    /** @type {string[]} Frames for the "falling asleep" long idle animation, shown after 5s of inactivity. */
     IMAGES_LONGIDLE = ['img/2_character_pepe/1_idle/long_idle/I-11.png',
         'img/2_character_pepe/1_idle/long_idle/I-12.png',
         'img/2_character_pepe/1_idle/long_idle/I-13.png',
@@ -23,6 +34,7 @@ class Character extends MovableObject {
         'img/2_character_pepe/1_idle/long_idle/I-19.png',
         'img/2_character_pepe/1_idle/long_idle/I-20.png',
     ];
+    /** @type {string[]} Frames for the walking animation. */
     IMAGES_WALKING = ['img/2_character_pepe/2_walk/W-21.png',
         'img/2_character_pepe/2_walk/W-22.png',
         'img/2_character_pepe/2_walk/W-23.png',
@@ -30,6 +42,7 @@ class Character extends MovableObject {
         'img/2_character_pepe/2_walk/W-25.png',
         'img/2_character_pepe/2_walk/W-26.png'
     ];
+    /** @type {string[]} Frames for the jumping animation. */
     IMAGES_JUMPING = [
         'img/2_character_pepe/3_jump/J-31.png',
         'img/2_character_pepe/3_jump/J-32.png',
@@ -41,8 +54,10 @@ class Character extends MovableObject {
         'img/2_character_pepe/3_jump/J-38.png',
         'img/2_character_pepe/3_jump/J-39.png',
     ]
+    /** @type {World} Reference to the game world, set externally after construction. */
     world;
     speed = 10;
+    /** @type {string[]} Frames for the death animation. */
     IMAGES_DEAD = [
         'img/2_character_pepe/5_dead/D-51.png',
         'img/2_character_pepe/5_dead/D-52.png',
@@ -52,18 +67,29 @@ class Character extends MovableObject {
         'img/2_character_pepe/5_dead/D-56.png',
         'img/2_character_pepe/5_dead/D-57.png'
     ];
+    /** @type {string[]} Frames for the hurt animation. */
     IMAGES_HURT = [
         'img/2_character_pepe/4_hurt/H-41.png',
         'img/2_character_pepe/4_hurt/H-42.png',
         'img/2_character_pepe/4_hurt/H-43.png'
     ];
+    /** @type {number} Number of coins collected. */
     coins = 0;
+    /** @type {number} Number of bottles collected. */
     bottles = 0;
+    /** @type {number} Timestamp (ms) marking when the character last entered a non-idle state, used to decide when to switch to the long-idle animation. */
     idleStautsStart;
+    /** @type {number} Interval ID for the input/camera update loop. */
     characterInterval1;
+    /** @type {number} Interval ID for the status/animation check loop. */
     characterInterval2;
+    /** @type {number|null} Interval ID for the repeating snore sound during long idle. */
     snoreInterval;
 
+    /**
+     * Creates the character, loads all animation frame sets, records
+     * the initial idle timestamp, and starts gravity and animation loops.
+     */
     constructor() {
         super().loadImage('img/2_character_pepe/2_walk/W-21.png');
         this.loadImages(this.IMAGES_IDLE);
@@ -79,6 +105,14 @@ class Character extends MovableObject {
 
     // ---------- MOVEMENT / INPUT ----------
 
+    /**
+     * Starts the two main update loops for the character: one at 60fps
+     * that reads keyboard input and updates the camera position, and
+     * one every 150ms that re-evaluates and applies the current status
+     * animation.
+     *
+     * @returns {void}
+     */
     animate() {
 
         this.characterInterval1 = setInterval(() => {
@@ -91,6 +125,13 @@ class Character extends MovableObject {
         }, 150);
     }
 
+    /**
+     * Reads the current keyboard state and moves/jumps the character
+     * accordingly, respecting the level boundaries. Plays the jump
+     * sound when a jump is triggered.
+     *
+     * @returns {void}
+     */
     checkKeyboardInput() {
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
             this.moveRight();
@@ -110,6 +151,13 @@ class Character extends MovableObject {
 
     // ---------- STATUS / ANIMATION STATE ----------
 
+    /**
+     * Determines the character's current status in priority order
+     * (dead > hurt > above ground > walking > idle) and applies the
+     * matching animation/sound state.
+     *
+     * @returns {void}
+     */
     checkStatus() {
         if (this.isDead()) {
             this.setDeadStatus();
@@ -130,23 +178,46 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Stops the snoring sound and plays the death animation.
+     *
+     * @returns {void}
+     */
     setDeadStatus() {
         this.stopSnoringSound();
         this.playAnimation(this.IMAGES_DEAD);
     }
 
+    /**
+     * Stops the snoring sound, plays the hurt animation, and resets
+     * the idle timer.
+     *
+     * @returns {void}
+     */
     setHurtStatus() {
         this.stopSnoringSound();
         this.playAnimation(this.IMAGES_HURT);
         this.idleStautsStart = new Date().getTime();
     }
 
+    /**
+     * Stops the snoring sound, plays the jumping animation, and resets
+     * the idle timer.
+     *
+     * @returns {void}
+     */
     setAboveGroundStatus() {
         this.stopSnoringSound();
         this.playAnimation(this.IMAGES_JUMPING);
         this.idleStautsStart = new Date().getTime();
     }
 
+    /**
+     * Stops the snoring sound, plays the walking sound and animation,
+     * and resets the idle timer.
+     *
+     * @returns {void}
+     */
     setWalkingStatus() {
         this.stopSnoringSound();
         AudioHub.playOne(AudioHub.PEPE_WALKING);
@@ -154,6 +225,14 @@ class Character extends MovableObject {
         this.idleStautsStart = new Date().getTime();
     }
 
+    /**
+     * Plays the appropriate idle animation based on how long the
+     * character has been idle: the short idle animation for the first
+     * 5 seconds, then the long idle ("falling asleep") animation with
+     * a repeating snore sound thereafter.
+     *
+     * @returns {void}
+     */
     playIdleAnimiations() {
         let timepassedIdleStatus = (new Date().getTime() - this.idleStautsStart) / 1000;
         if (timepassedIdleStatus > 5) {
@@ -172,6 +251,11 @@ class Character extends MovableObject {
 
     // ---------- SOUND ----------
 
+    /**
+     * Stops the repeating snore sound, if currently active.
+     *
+     * @returns {void}
+     */
     stopSnoringSound() {
         if (this.snoreInterval) {
             clearInterval(this.snoreInterval);

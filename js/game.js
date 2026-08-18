@@ -14,17 +14,29 @@ const THROWABLERightRef = document.getElementById('throw_btn');
 
 // ---------- MEDIA QUERIES ----------
 
+/** @type {MediaQueryList} Matches touch devices in portrait orientation. */
 const portraitQuery = window.matchMedia('(hover: none) and (orientation: portrait)');
+/** @type {MediaQueryList} Matches touch devices in landscape orientation. */
 const landscapeQuery = window.matchMedia('(hover: none) and (orientation: landscape)');
 
 // ---------- GLOBAL STATE ----------
 
+/** @type {World} The current game world instance, created on game start. */
 let world;
+/** @type {Keyboard} Tracks the current pressed/released state of control keys. */
 let keyboard = new Keyboard();
+/** @type {boolean} Whether sound is currently enabled, based on stored user preference. */
 let sound = getSoundFromLocalStorage();
 
 // ---------- GAME START / INIT ----------
 
+/**
+ * Starts the game by creating a new World instance bound to the canvas,
+ * revealing the volume and play/pause controls, showing the fullscreen
+ * button, and applying the correct layout for the current orientation.
+ *
+ * @returns {void}
+ */
 function startGame() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
@@ -34,6 +46,13 @@ function startGame() {
     handleOrientationChange();
 }
 
+/**
+ * Initializes the start screen: applies the correct orientation layout,
+ * shows the start screen image and buttons, and wires up the click
+ * handler that begins the game and starts the background audio.
+ *
+ * @returns {void}
+ */
 function init() {
     handleOrientationChange();
     document.getElementById('start_img').style.display = 'flex';
@@ -53,6 +72,16 @@ function init() {
 
 // ---------- SOUND / VOLUME ----------
 
+/**
+ * Reads the stored sound preference from localStorage and syncs
+ * {@link AudioHub.isMuted} accordingly. Defaults to sound enabled
+ * (and {@link AudioHub.isMuted} set to false) if no value is stored.
+ *
+ * Note: the return value follows the stored 'sound' flag directly,
+ * where `true` means unmuted and no stored value also resolves to `true`.
+ *
+ * @returns {boolean} Whether sound should be considered "on".
+ */
 function getSoundFromLocalStorage() {
 
     let data = localStorage.getItem('sound');
@@ -73,6 +102,12 @@ function getSoundFromLocalStorage() {
     }
 }
 
+/**
+ * Shows the correct volume icon (on/off) based on the current
+ * `sound` state, hiding the other one.
+ *
+ * @returns {void}
+ */
 function showVolumeBtns() {
     if (sound) {
         document.getElementById('volume-off').style.display = 'none';
@@ -83,17 +118,34 @@ function showVolumeBtns() {
     }
 }
 
+/**
+ * Hides both the volume-on and volume-off buttons.
+ *
+ * @returns {void}
+ */
 function hideVolumeBtns() {
     document.getElementById('volume-off').style.display = 'none';
     document.getElementById('volume-on').style.display = 'none';
 }
 
+/**
+ * Reveals the play/pause button.
+ *
+ * @returns {void}
+ */
 function showPlayPauseBtn() {
     document.getElementById('play-pause-btn').style.display = 'flex';
 }
 
 // ---------- KEYBOARD ----------
 
+/**
+ * Handles the `keydown` event and sets the corresponding
+ * {@link Keyboard} property to `true` based on the pressed key code.
+ *
+ * @param {KeyboardEvent} event - The keydown event.
+ * @returns {void}
+ */
 function handleKeyDown(event) {
     switch (event.keyCode) {
         case 68:
@@ -119,6 +171,13 @@ function handleKeyDown(event) {
     }
 }
 
+/**
+ * Handles the `keyup` event and sets the corresponding
+ * {@link Keyboard} property to `false` based on the released key code.
+ *
+ * @param {KeyboardEvent} event - The keyup event.
+ * @returns {void}
+ */
 function handleKeyUp(event) {
     switch (event.keyCode) {
         case 68:
@@ -149,6 +208,15 @@ document.addEventListener('keyup', handleKeyUp);
 
 // ---------- TOUCH / MOBILE CONTROLS ----------
 
+/**
+ * Wires up touch event listeners on a control element so that touching
+ * it sets the given {@link Keyboard} property to `true`, and releasing
+ * or cancelling the touch sets it back to `false`.
+ *
+ * @param {HTMLElement} element - The touch control element (e.g. an arrow button).
+ * @param {string} keyProp - The {@link Keyboard} property to toggle (e.g. 'LEFT', 'RIGHT', 'SPACE', 'D').
+ * @returns {void}
+ */
 function addTouchControl(element, keyProp) {
     element.addEventListener('touchstart', function() {
         keyboard[keyProp] = true;
@@ -168,6 +236,17 @@ addTouchControl(THROWABLERightRef, 'D');
 
 // ---------- ORIENTATION / RESPONSIVE LAYOUT ----------
 
+/**
+ * Applies the layout used on touch devices in portrait orientation:
+ * shows the rotate-device prompt and hides the title, canvas, and
+ * impressum link, since the game isn't playable in this orientation.
+ *
+ * @param {SVGElement} rotateIcon - The "please rotate your device" icon element.
+ * @param {HTMLElement} title - The page title element.
+ * @param {HTMLElement} canvasWrapper - The wrapper element containing the game canvas.
+ * @param {HTMLElement} impressumBtn - The impressum link element.
+ * @returns {void}
+ */
 function showPortraitLayout(rotateIcon, title, canvasWrapper, impressumBtn) {
     rotateIcon.style.cssText = `
         display: flex;
@@ -183,6 +262,17 @@ function showPortraitLayout(rotateIcon, title, canvasWrapper, impressumBtn) {
     document.body.style.backgroundImage = 'none';
 }
 
+/**
+ * Applies the normal playable layout: hides the rotate-device prompt
+ * and shows the title, canvas, and impressum link, restoring the
+ * background image.
+ *
+ * @param {SVGElement} rotateIcon - The "please rotate your device" icon element.
+ * @param {HTMLElement} title - The page title element.
+ * @param {HTMLElement} canvasWrapper - The wrapper element containing the game canvas.
+ * @param {HTMLElement} impressumBtn - The impressum link element.
+ * @returns {void}
+ */
 function showLandscapeLayout(rotateIcon, title, canvasWrapper, impressumBtn) {
     rotateIcon.style.display = 'none';
     title.style.display = 'flex';
@@ -191,6 +281,16 @@ function showLandscapeLayout(rotateIcon, title, canvasWrapper, impressumBtn) {
     document.body.style.backgroundImage = `url('img/5_background/bg_img.png')`;
 }
 
+/**
+ * Responds to changes in device orientation/type. Shows or hides the
+ * touch controls and switches between the portrait and landscape
+ * layouts. On touch portrait, pauses an active game (stops movable
+ * objects and deactivates the keyboard); on touch landscape, resumes
+ * it if it was paused. Non-touch devices always use the landscape
+ * layout with touch controls hidden.
+ *
+ * @returns {void}
+ */
 function handleOrientationChange() {
     if (portraitQuery.matches) {
         arrowsContainerRef.style.display = 'none';
