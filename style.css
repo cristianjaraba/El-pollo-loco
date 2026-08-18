@@ -188,10 +188,7 @@ canvas {
     font-family: 'Luckiest Guy';
     letter-spacing: 0.5px;
     color: #FFE21A;
-    /* text-shadow:
-        2px 2px 0 #FF9A00,
-        4px 4px 0 #8B3A00; */
-    font-size: clamp(0.5rem, 2vw, 1rem);
+    font-size: clamp(16px, 2vw, 1.5rem);
     text-align: center;
 }
 
@@ -284,7 +281,7 @@ dialog {
 
     font-family: 'Luckiest Guy';
     letter-spacing: 0.5px;
-    font-size: small;
+    font-size: clamp(16px, 2vw, 1.5rem);
     color: #FFE21A;
 
     background-color: #c03136;
