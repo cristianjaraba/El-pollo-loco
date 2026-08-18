@@ -7,8 +7,8 @@
  * @extends MovableObject
  */
 class Character extends MovableObject {
-    y = 80;
-    height = 250;
+    y = 230;
+    height = 200;
 
     /** @type {string[]} Frames for the short idle animation. */
     IMAGES_IDLE = ['img/2_character_pepe/1_idle/idle/I-1.png',
