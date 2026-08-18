@@ -93,8 +93,10 @@ class Endboss extends MovableObject {
             if (world.character.x > 4000) {
                 if (world.character.x > this.x) {
                     this.moveRight();
+                    this.otherDirection = true;
                 } else {
                     this.moveLeft();
+                    this.otherDirection = false;
                 }
             }
         }, 1000 / 60);
