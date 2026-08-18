@@ -60,7 +60,11 @@ class ThrowableObject extends MovableObject {
         this.speedY = 30;
         this.applyGravity();
         this.animationIntervalBottle1 = setInterval(() => {
-            this.x += 5;
+            if (world.character.otherDirection == false) {
+                this.x += 5;
+            } else {
+                this.x -= 5;
+            }   
         }, 25);
         this.animationIntervalBottle2 = setInterval(() => {
             if (this.y > 350) {
