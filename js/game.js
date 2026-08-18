@@ -297,8 +297,8 @@ function handleOrientationChange() {
         throwContainerRef.style.display = 'none';
         showPortraitLayout(rotateIcon, title, canvasWrapper, impressumBtn);
         if (world && !world.isPaused) {
-            world.stopAllMovableObjects();
-            world.deactivateKeyboard();
+            world.helper.stopAllMovableObjects();
+            world.helper.deactivateKeyboard();
             world.isPaused = true;
         }
 
@@ -307,8 +307,8 @@ function handleOrientationChange() {
         throwContainerRef.style.display = (world && !world.endOfgame) ? 'flex' : 'none';
         showLandscapeLayout(rotateIcon, title, canvasWrapper, impressumBtn);
         if (world && world.isPaused) {
-            world.unpauseAllMovableObjects();
-            world.activateKeyboard();
+            world.helper.unpauseAllMovableObjects();
+            world.helper.activateKeyboard();
             world.isPaused = false;
         }
 
@@ -354,12 +354,12 @@ document.getElementById('full-screen-btn').onclick = () => {
 
 document.getElementById('play-pause-btn').onclick = () => {
     if (world.isPaused) {
-        world.unpauseAllMovableObjects();
-        world.activateKeyboard();
+        world.helper.unpauseAllMovableObjects();
+        world.helper.activateKeyboard();
         world.isPaused = false;
     } else {
-        world.stopAllMovableObjects();
-        world.deactivateKeyboard();
+        world.helper.stopAllMovableObjects();
+        world.helper.deactivateKeyboard();
         world.isPaused = true;
     }
 }

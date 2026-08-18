@@ -1,8 +1,9 @@
 /**
  * The main game world/orchestrator. Owns the character, level, status
  * bars, throwable objects, and the render/update loops. Handles
- * collision detection, collectable pickup, throwing bottles, pausing,
- * end-of-game state transitions, and rendering everything to the canvas.
+ * collision detection, collectable pickup, throwing bottles, and
+ * rendering everything to the canvas. Pausing, cleanup, keyboard
+ * control, and end-of-game housekeeping are delegated to {@link Helper}.
  */
 class World {
     /** @type {Character} The player character. */
@@ -76,6 +77,8 @@ class World {
     lastHurtSound = 0;
     /** @type {boolean} Whether the game is currently paused. */
     isPaused = false;
+    /** @type {Helper} Manages pausing, cleanup, keyboard control, and end-of-game transitions for this world. */
+    helper;
 
     /**
      * Creates the game world: builds the level (enemies, clouds,
@@ -86,6 +89,7 @@ class World {
      * @param {Keyboard} keyboard - The shared keyboard input state.
      */
     constructor(canvas, keyboard) {
+        this.helper = new Helper(this);
         this.level = new Level(
             generateEnemiesList(),
             [new Cloud(), new Cloud(), new Cloud(), new Cloud(), new Cloud()],
@@ -100,7 +104,7 @@ class World {
         this.setWorld();
         this.run();
         this.runSlowlier();
-        this.checkEndOfGame();
+        this.helper.checkEndOfGame();
     }
 
     /**
@@ -209,7 +213,7 @@ class World {
                 AudioHub.playOne(AudioHub.DEADENEMY);
                 enemy.hit();
                 setTimeout(() => {
-                    this.removeObjectFromArray(enemy.x, this.level.enemies)
+                    this.helper.removeObjectFromArray(enemy.x, this.level.enemies)
                 }, 300);
                 return true;
             }
@@ -247,7 +251,7 @@ class World {
      * @returns {void}
      */
     setBossHitSActions(bottle, enemy) {
-        this.removeObjectFromArray(bottle.x, this.throwableObjects);
+        this.helper.removeObjectFromArray(bottle.x, this.throwableObjects);
         AudioHub.playOne(AudioHub.ENDBOSS_HURT);
         enemy.hit();
         this.statusBarEndBoss.setPercentage(enemy.energy * 4);
@@ -268,10 +272,10 @@ class World {
         AudioHub.playOne(AudioHub.DEADENEMY);
         enemy.hit();
         setTimeout(() => {
-            this.removeObjectFromArray(bottle.x, this.throwableObjects);
+            this.helper.removeObjectFromArray(bottle.x, this.throwableObjects);
         }, 300);
         setTimeout(() => {
-            this.removeObjectFromArray(enemy.x, this.level.enemies);
+            this.helper.removeObjectFromArray(enemy.x, this.level.enemies);
         }, 300);
     }
 
@@ -312,7 +316,7 @@ class World {
             if (this.character.isColliding(coin)) {
                 AudioHub.playOne(AudioHub.COIN);
                 this.character.coins += 10;
-                this.removeObjectFromArray(coin.x, this.level.coins);
+                this.helper.removeObjectFromArray(coin.x, this.level.coins);
             }
         }
         );
@@ -331,330 +335,10 @@ class World {
             if (this.character.isColliding(bottle)) {
                 AudioHub.playOne(AudioHub.BOTTLE);
                 this.character.bottles += 10;
-                this.removeObjectFromArray(bottle.x, this.level.bottles);
+                this.helper.removeObjectFromArray(bottle.x, this.level.bottles);
             }
         }
         );
-    }
-
-    /**
-     * Removes the first object from an array whose `x` property
-     * matches the given value.
-     *
-     * @param {number} value - The `x` value identifying the object to remove.
-     * @param {Array<Object>} array - The array to remove the object from.
-     * @returns {void}
-     */
-    removeObjectFromArray(value, array) {
-        const removeIndex = array.findIndex(item => item.x === value);
-        array.splice(removeIndex, 1);
-    }
-
-    // ---------- PLAY~PAUSE / STOP / CLEANUP ----------
-
-    /**
-     * Fully tears down the world's own loops: clears the update
-     * intervals, the end-of-game poll interval, and cancels the
-     * render animation frame. Does not stop individual game objects'
-     * own intervals — use {@link World#stopAllMovableObjects} for that.
-     *
-     * @returns {void}
-     */
-    destroy() {
-        clearInterval(this.worldInterval1);
-        clearInterval(this.worldInterval2);
-        clearInterval(this.endGameInterval);
-        cancelAnimationFrame(this.animationFrameId);
-    }
-    /**
-     * Stops the shimmer animation loops on all remaining collectable
-     * bottles and coins.
-     *
-     * @returns {void}
-     */
-    stopCollectableObjects() {
-        this.level.bottles.forEach((bottle) => { clearInterval(bottle.collectablesInterval); });
-        this.level.coins.forEach((coin) => { clearInterval(coin.collectablesInterval); });
-    }
-
-    /**
-     * Stops the movement and animation loops on all non-boss enemies.
-     *
-     * @returns {void}
-     */
-    stopAllEnemies() {
-        this.level.enemies.forEach((enemy) => {
-            clearInterval(enemy.chickenInterval1);
-            clearInterval(enemy.chickenInterval2);
-        });
-    }
-
-    /**
-     * Stops the movement and status loops on the endboss, if present
-     * in the current level.
-     *
-     * @returns {void}
-     */
-    stopEndBoss() {
-        const endBoss = this.level.enemies.find(enemy => enemy instanceof Endboss);
-        if (endBoss) {
-            clearInterval(endBoss.endBossInterval1);
-            clearInterval(endBoss.endBossInterval2);
-        }
-    }
-
-    /**
-     * Stops the character's input, status, and gravity loops, silences
-     * its snoring sound, and clears any pending stop timeout.
-     *
-     * @returns {void}
-     */
-    stopPepe() {
-        clearInterval(this.character.characterInterval1);
-        clearInterval(this.character.characterInterval2);
-        clearInterval(this.character.gravityInterval);
-        this.character.stopSnoringSound();
-        clearTimeout(this.stopPepeTimeout);
-    }
-    /**
-     * Stops the drift animation loop on all background clouds.
-     *
-     * @returns {void}
-     */
-    stopClouds() {
-        this.level.clouds.forEach((cloud) => {
-            clearInterval(cloud.cloudInterval);
-        });
-    }
-    /**
-     * Stops the drift, animation, and gravity loops on all currently
-     * active thrown bottles.
-     *
-     * @returns {void}
-     */
-    stopThrowableObjects() {
-        this.throwableObjects.forEach((bottle) => {
-            clearInterval(bottle.animationIntervalBottle1);
-            clearInterval(bottle.animationIntervalBottle2);
-            clearInterval(bottle.gravityInterval);
-        });
-    }
-    /**
-     * Pauses the game by stopping every movable/animated object's
-     * loops: thrown bottles, enemies, the endboss, collectables, the
-     * character, and clouds.
-     *
-     * @returns {void}
-     */
-    stopAllMovableObjects() {
-        this.stopThrowableObjects();
-        this.stopAllEnemies();
-        this.stopEndBoss();
-        this.stopCollectableObjects();
-        this.stopPepe();
-        this.stopClouds();
-    }
-    /**
-     * Resumes the game after a pause by restarting every object's
-     * animation/movement loops: thrown bottles, enemies, collectables,
-     * the character (including gravity), and clouds.
-     *
-     * @returns {void}
-     */
-    unpauseAllMovableObjects(){
-        this.throwableObjects.forEach((bottle) => {bottle.setImg();});
-        this.level.enemies.forEach((enemy)=>{enemy.animate();});
-        this.level.bottles.forEach((bottle) => {bottle.setImg();});
-        this.level.coins.forEach((coin) => {coin.setImg();});
-        this.character.animate();
-        this.character.applyGravity();
-        this.level.clouds.forEach((cloud) => {cloud.animate();});
-    }
-    /**
-     * Clears just the world's own main update intervals (without
-     * touching individual game objects or the render loop).
-     *
-     * @returns {void}
-     */
-    clearWorldIntervals() {
-        clearInterval(this.worldInterval1);
-        clearInterval(this.worldInterval2);
-    }
-
-    // ---------- END OF GAME STATE ----------
-
-    /**
-     * Starts a polling loop (every second) that checks whether the
-     * game has been lost or won, and triggers the corresponding
-     * end-of-game state transition exactly once.
-     *
-     * @returns {void}
-     */
-    checkEndOfGame() {
-        this.endGameInterval = setInterval(() => {
-            if (this.gameover == true && this.endOfgame == false) {
-                this.setGameOverStates();
-                return;
-            }
-            if (this.youwin == true && this.endOfgame == false) {
-                this.setYouWinStates();
-                return;
-            }
-        }, 1000);
-    }
-
-    /**
-     * Transitions the world into the "game over" end state: stops all
-     * movement, clears update intervals, marks the game as ended,
-     * switches to the end-of-game UI, and plays the game-over audio.
-     *
-     * @returns {void}
-     */
-    setGameOverStates() {
-        this.stopAllMovableObjects();
-        this.clearWorldIntervals();
-        this.endOfgame = true;
-        this.switchToEndState();
-        clearInterval(this.endGameInterval);
-        this.playEndAudios();
-    }
-    /**
-     * Transitions the world into the "you win" end state: stops all
-     * movement, clears update intervals, marks the game as ended,
-     * switches to the end-of-game UI, and plays the victory audio.
-     *
-     * @returns {void}
-     */
-    setYouWinStates() {
-        this.stopAllMovableObjects();
-        this.clearWorldIntervals();
-        this.endOfgame = true;
-        this.switchToEndState();
-        clearInterval(this.endGameInterval);
-        this.playEndAudios();
-    }
-
-    /**
-     * Common end-of-game UI transition: disables keyboard input and
-     * reveals/activates the "restart" and "back to start" buttons.
-     *
-     * @returns {void}
-     */
-    switchToEndState() {
-        this.deactivateKeyboard();
-        this.showEndButtons();
-        this.activateEndButtons();
-    }
-
-    /**
-     * Plays the appropriate end-of-game audio sequence depending on
-     * whether the player lost ({@link World#gameover}) or won
-     * ({@link World#youwin}), stopping all other audio first.
-     *
-     * @returns {void}
-     */
-    playEndAudios() {
-        if (this.gameover == true) {
-            AudioHub.stopAll();
-            AudioHub.playOne(AudioHub.PEPE_DEAD);
-            AudioHub.playOne(AudioHub.GAMEOVER);
-            return;
-        }
-        if (this.youwin == true) {
-            AudioHub.stopAll();
-            AudioHub.playOne(AudioHub.ENDBOSS_DEAD);
-            AudioHub.playOne(AudioHub.YOU_WIN);
-            return;
-        }
-    }
-
-    // ---------- KEYBOARD ----------
-
-    /**
-     * Removes the global keydown/keyup listeners, disabling character
-     * control via the keyboard.
-     *
-     * @returns {void}
-     */
-    deactivateKeyboard() {
-        document.removeEventListener('keydown', handleKeyDown);
-        document.removeEventListener('keyup', handleKeyUp);
-    }
-
-    /**
-     * Adds the global keydown/keyup listeners, enabling character
-     * control via the keyboard.
-     *
-     * @returns {void}
-     */
-    activateKeyboard() {
-        document.addEventListener('keydown', handleKeyDown);
-        document.addEventListener('keyup', handleKeyUp);
-    }
-
-    // ---------- END BUTTONS ----------
-
-    /**
-     * Reveals the "restart" and "back to start" buttons.
-     *
-     * @returns {void}
-     */
-    showEndButtons() {
-        document.getElementById('neu_starten_btn').style.display = 'flex';
-        document.getElementById('zur_startseite_btn').style.display = 'flex';
-
-    }
-
-    /**
-     * Returns to the start screen: stops all audio, tears down the
-     * world, re-initializes the start UI, hides in-game controls, and
-     * resets keyboard state.
-     *
-     * @returns {void}
-     */
-    goToStartScreen() {
-        AudioHub.stopAll();
-        this.destroy();
-        init();
-        document.getElementById('neu_starten_btn').style.display = 'none';
-        document.getElementById('zur_startseite_btn').style.display = 'none';
-        document.getElementById('full-screen-btn').style.display = 'none';
-        document.getElementById('play-pause-btn').style.display = 'none';
-        
-        keyboard = new Keyboard();
-        world.activateKeyboard();
-        hideVolumeBtns();
-    }
-
-    /**
-     * Restarts the game from scratch: stops all audio, hides
-     * end-of-game buttons, tears down the current world, and creates
-     * a fresh {@link World} with a new keyboard and background audio.
-     *
-     * @returns {void}
-     */
-    restartGame() {
-        AudioHub.stopAll();
-        document.getElementById('neu_starten_btn').style.display = 'none';
-        document.getElementById('zur_startseite_btn').style.display = 'none';
-        document.getElementById('full-screen-btn').style.display = 'flex';
-        this.destroy();
-        keyboard = new Keyboard();
-        world = new World(canvas, keyboard);
-        world.activateKeyboard();
-        AudioHub.playOne(AudioHub.CHICKEN_BG);
-        AudioHub.playLoop(AudioHub.BG_MUSIC, 21000);
-    }
-
-    /**
-     * Wires up the click handlers for the "back to start" and
-     * "restart" end-of-game buttons.
-     *
-     * @returns {void}
-     */
-    activateEndButtons() {
-        document.getElementById('zur_startseite_btn').onclick = () => this.goToStartScreen();
-        document.getElementById('neu_starten_btn').onclick = () => this.restartGame();
     }
 
     // ---------- RENDERING ----------
